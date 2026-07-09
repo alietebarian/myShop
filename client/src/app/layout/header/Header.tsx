@@ -6,255 +6,93 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <header
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "15px 40px",
-        background: "white",
-        borderBottom: "2px solid #f0f0f0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-        direction: "rtl",
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-        flexWrap: "wrap",
-        gap: "12px",
-      }}
-    >
-      {/* right side - Logo */}
-      <Link to="/">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            lineHeight: 1.2,
-            cursor: "pointer",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "22px",
-              fontWeight: 800,
-              color: "#b8860b",
-              letterSpacing: "1px",
-            }}
-          >
-            مس کده
-          </span>
-          <span style={{ fontSize: "11px", color: "#8b8b8b", fontWeight: 400 }}>
-            ظروف و شمش مس
-          </span>
-        </div>
-      </Link>
-
-      {/* search section */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          background: "#f5f5f5",
-          borderRadius: "30px",
-          padding: "4px 4px 4px 15px",
-          flex: 1,
-          maxWidth: "400px",
-          margin: "0 20px",
-          border: "2px solid transparent",
-          transition: "all 0.3s ease",
-        }}
-        className="group focus-within:bg-white focus-within:border-amber-700 focus-within:shadow-[0_0_0_4px_rgba(184,134,11,0.1)]"
-      >
-        <input
-          type="text"
-          placeholder="جستجو محصول..."
-          style={{
-            flex: 1,
-            border: "none",
-            background: "transparent",
-            padding: "10px 12px",
-            fontSize: "14px",
-            outline: "none",
-            color: "#333",
-            fontFamily: "inherit",
-          }}
-          className="placeholder:text-gray-400"
-        />
-        <button
-          style={{
-            background: "#b8860b",
-            border: "none",
-            color: "white",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-            fontSize: "18px",
-          }}
-          className="hover:bg-amber-800 hover:scale-105"
-        >
-          <BiSearch />
-        </button>
-      </div>
-
-      {/* navigation items */}
-      <div style={{ margin: "0 15px" }}>
-        <ul
-          style={{
-            display: "flex",
-            listStyle: "none",
-            gap: "25px",
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          <li
-            style={{
-              fontSize: "15px",
-              fontWeight: 500,
-              color: "#b8860b",
-              cursor: "pointer",
-              padding: "6px 0",
-              borderBottom: "3px solid #b8860b",
-              transition: "all 0.3s ease",
-            }}
-          >
-            ظروف مسی
-          </li>
-          <li
-            style={{
-              fontSize: "15px",
-              fontWeight: 500,
-              color: "#555",
-              cursor: "pointer",
-              padding: "6px 0",
-              borderBottom: "3px solid transparent",
-              transition: "all 0.3s ease",
-            }}
-            className="hover:text-amber-700"
-          >
-            شمش مس
-          </li>
-          <li
-            style={{
-              fontSize: "15px",
-              fontWeight: 500,
-              color: "#555",
-              cursor: "pointer",
-              padding: "6px 0",
-              borderBottom: "3px solid transparent",
-              transition: "all 0.3s ease",
-            }}
-            className="hover:text-amber-700"
-          >
-            صنعتی
-          </li>
-        </ul>
-      </div>
-
-      {/* left side - User actions */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "25px",
-        }}
-      >
-        {/* Admin */}
-        <Link to='/dashboard'>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            cursor: "pointer",
-            padding: "6px 10px",
-            borderRadius: "20px",
-            transition: "all 0.3s ease",
-          }}
-          className="hover:bg-gray-100"
-          >
-          <span style={{ fontSize: "13px", color: "#b8860b", fontWeight: 500 }}>
-            پنل مدیریت
-          </span>
-          <RiAdminLine style={{ fontSize: "20px", color: "#b8860b" }} />
-        </div>
-          </Link>
-
-        {/* Login */}
-        <Link to='/login'>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              cursor: "pointer",
-              padding: "6px 10px",
-              borderRadius: "20px",
-              transition: "all 0.3s ease",
-            }}
-            className="hover:bg-gray-100 group"
-          >
-            <span style={{ fontSize: "13px", color: "#555", fontWeight: 500 }}>
-              ورود/ ثبت نام
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm px-4 md:px-8">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 h-16 md:h-20">
+        {/* Logo - Left side (RTL) */}
+        <Link to="/" className="shrink-0">
+          <div className="flex flex-col leading-tight">
+            <span className="text-2xl font-extrabold text-amber-700 tracking-wide">
+              مس کده
             </span>
-            <CiUser
-              style={{
-                fontSize: "20px",
-                color: "#555",
-                transition: "all 0.3s ease",
-              }}
-              className="group-hover:text-amber-700"
-            />
+            <span className="text-[10px] text-gray-400 font-light">
+              ظروف و شمش مس
+            </span>
           </div>
         </Link>
 
-        {/* Cart */}
-        <div
-          style={{
-            position: "relative",
-            cursor: "pointer",
-            padding: "8px",
-            borderRadius: "50%",
-            transition: "all 0.3s ease",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          className="hover:bg-gray-100 group"
-        >
-          <PiBasketLight
-            style={{
-              fontSize: "26px",
-              color: "#555",
-              transition: "all 0.3s ease",
-            }}
-            className="group-hover:text-amber-700 group-hover:scale-110"
-          />
-          <span
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              background: "#e74c3c",
-              color: "white",
-              fontSize: "10px",
-              fontWeight: 700,
-              width: "18px",
-              height: "18px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "2px solid white",
-            }}
+        {/* Search - Center */}
+        <div className="flex-1 max-w-xl mx-4 hidden sm:flex">
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="جستجو محصول..."
+              className="w-full px-5 py-2.5 pr-12 rounded-full border-amber-400 bg-gray-50 border-2 focus:border-amber-600 focus:bg-white focus:outline-none transition-all duration-300 text-sm text-gray-700 placeholder:text-gray-400"
+            />
+            <button
+              className="absolute left-1 top-1/2 -translate-y-1/2 bg-amber-600 hover:bg-amber-700 text-white p-2 rounded-full transition-all duration-300 hover:scale-105"
+              aria-label="جستجو"
+            >
+              <BiSearch size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Search Button */}
+        <button className="sm:hidden p-2 text-gray-600 hover:text-amber-600 transition-colors">
+          <BiSearch size={22} />
+        </button>
+
+        {/* Navigation - Center-Right */}
+        <nav className="hidden lg:flex items-center gap-6">
+          <Link
+            to="/products"
+            className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
           >
-            0
-          </span>
+            همه محصولات
+          </Link>
+          <Link
+            to="/about"
+            className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
+          >
+            درباره ما
+          </Link>
+        </nav>
+
+        {/* User Actions - Right side */}
+        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+          {/* Admin */}
+          <Link
+            to="/dashboard"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-amber-50 transition-all group"
+          >
+            <span className="text-xs font-medium text-amber-700 group-hover:text-amber-800">
+              پنل مدیریت
+            </span>
+            <RiAdminLine className="text-amber-600 text-lg" />
+          </Link>
+
+          {/* Login */}
+          <Link
+            to="/login"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
+          >
+            <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors hidden sm:inline">
+              ورود / ثبت نام
+            </span>
+            <CiUser className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
+          </Link>
+
+          {/* Cart */}
+          <Link
+            to="/cart"
+            className="relative p-2 rounded-full hover:bg-gray-50 transition-all group"
+            aria-label="سبد خرید"
+          >
+            <PiBasketLight className="text-gray-600 text-2xl group-hover:text-amber-700 group-hover:scale-110 transition-all" />
+            <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              ۰
+            </span>
+          </Link>
         </div>
       </div>
     </header>
