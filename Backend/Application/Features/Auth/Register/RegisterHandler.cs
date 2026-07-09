@@ -28,7 +28,8 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
-            UserName = request.Email
+            UserName = request.Email,
+            PhoneNumber = request.PhoneNumber,
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
@@ -40,12 +41,22 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
             );
         }
 
+        const string role = "User";
+        var roleResult = await _userManager.AddToRoleAsync(user, "User");
+
+        if (!roleResult.Succeeded)
+        {
+            throw new Exception(
+                string.Join(", ", roleResult.Errors.Select(x => x.Description)));
+        }
+
         return new AuthResponse
         {
-            AccessToken = _jwtTokenGenerator.GenerateToken(user),
+            AccessToken = _jwtTokenGenerator.GenerateToken(user, role),
             UserId = user.Id,
             Email = request.Email!,
             FullName = $"{request.FirstName} {request.LastName}",
+            Role = role
         };
     }
 }

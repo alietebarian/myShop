@@ -18,13 +18,14 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     {
         _jwtSettings = jwtSettings.Value;
     }
-    public string GenerateToken(User user)
+    public string GenerateToken(User user, string role)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email!),
-            new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
+            new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+            new(ClaimTypes.Role, role)
         };
 
         var key = new SymmetricSecurityKey(

@@ -1,13 +1,14 @@
+using Application.Common;
 using Application.DependencyInjection;
 using Domain.Entities;
 using Infrastructure.DependencyInjection;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using System.Text;
-using Application.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,21 @@ builder.Services
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var userManager =
+        services.GetRequiredService<UserManager<User>>();
+
+    var roleManager =
+        services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await IdentitySeeder.SeedAsync(
+        userManager,
+        roleManager);
+}
 
 app.UseCors(x =>
     x.AllowAnyHeader()

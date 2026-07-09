@@ -20,5 +20,9 @@ public class RegisterValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Password)
             .NotEmpty()
             .MinimumLength(6);
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty()
+            .MaximumLength(12);
     }
 }

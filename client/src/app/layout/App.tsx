@@ -1,9 +1,9 @@
 import React from 'react'
+import Header from './header/Header';
 
-export default function App() { 
-  console.log(localStorage.getItem("accessToken"));
+export default function App() {
   
   return (
-    <div className='bg-red-500'>App</div>
+    <div><Header/></div>
   )
 }

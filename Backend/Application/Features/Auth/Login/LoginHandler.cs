@@ -25,12 +25,17 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
 
         if (!isPasswordValid) throw new Exception("Invalid password or email");
 
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault() ?? "User";
+
+
         return new AuthResponse
         {
-            AccessToken = _jwtTokenGenerator.GenerateToken(user),
+            AccessToken = _jwtTokenGenerator.GenerateToken(user, role),
             UserId = user.Id,
             Email = request.Email,
-            FullName = $"{user.FirstName} {user.LastName}"
+            FullName = $"{user.FirstName} {user.LastName}",
+            Role = role,
         };
     }
 }

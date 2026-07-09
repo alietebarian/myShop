@@ -1,12 +1,15 @@
-import { createBrowserRouter } from "react-router-dom";
-import PrivateRoute from "./privateRoute";
-import LoginPage from "../../features/LoginPage";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../layout/App";
+import AuthPage from "../pages/auth/AuthPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
+import ManageProducts from "../pages/product/ManageProducts";
+import ManageCategories from "../pages/dashboard/ManageCategories";
+import PrivateRoute from "./privateRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <AuthPage />,
   },
 
   {
@@ -14,24 +17,29 @@ export const router = createBrowserRouter([
     element: <App />,
   },
 
-  //   {
-  //     path: "/register",
-  //     element: <RegisterPage />,
-  //   },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardPage />
+      </PrivateRoute>
+    ),
 
-  //   {
-  //     path: "/",
-  //     element: (
-  //       <PrivateRoute>
-  //         <DashboardLayout />
-  //       </PrivateRoute>
-  //     ),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="manageProducts" replace />,
+      },
+      {
+        path: "manageProducts",
+        element: <ManageProducts />,
+      },
+      {
+        path: "manageCategories",
+        element: <ManageCategories />,
+      },
+    ],
+  },
 
-  //     children: [
-  //       {
-  //         path: "dashboard",
-  //         element: <DashboardPage />,
-  //       },
-  //     ],
-  //   },
+
 ]);

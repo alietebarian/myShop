@@ -1,8 +1,7 @@
-import axios from 'axios';
+import axios, { type AxiosResponse, type AxiosRequestConfig } from "axios";
 
 const agent = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  // withCredentials: true,
 });
 
 agent.interceptors.request.use((config) => {
@@ -15,4 +14,18 @@ agent.interceptors.request.use((config) => {
   return config;
 });
 
-export default agent;
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
+export default {
+  get: <T>(url: string, config?: AxiosRequestConfig) =>
+    agent.get<T>(url, config).then(responseBody),
+
+  post: <T>(url: string, body: object) =>
+    agent.post<T>(url, body).then(responseBody),
+
+  put: <T>(url: string, body: object) =>
+    agent.put<T>(url, body).then(responseBody),
+
+  delete: <T>(url: string, config?: AxiosRequestConfig) =>
+    agent.delete<T>(url, config).then(responseBody),
+};
