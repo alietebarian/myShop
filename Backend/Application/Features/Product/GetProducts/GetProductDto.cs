@@ -10,6 +10,6 @@ public class GetProductDto
     public int Price { get; set; }
     public bool Status { get; set; }
     public string CategoryName { get; set; } = null!;
-    public string categoryId { get; set; } = null!;
+    public Guid categoryId { get; set; }
     public int Stock { get; set; }
 }

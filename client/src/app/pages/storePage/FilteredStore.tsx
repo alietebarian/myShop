@@ -1,45 +1,88 @@
+import { IoChevronForward, IoCheckmarkCircle } from "react-icons/io5";
 import { useCategories } from "../../../lib/hooks/useCategories";
-import { IoChevronForward } from "react-icons/io5";
 
-function FilteredStore() {
+type FilteredStoreProps = {
+  selectedCategory: string;
+  onSelectCategory: (id: string) => void;
+};
+
+function FilteredStore({
+  selectedCategory,
+  onSelectCategory,
+}: FilteredStoreProps) {
   const { data: categories } = useCategories(1, 10, "");
 
   return (
-    <div className="sticky top-24 bg-white rounded-2xl shadow-sm border border-gray-100/80 p-5 h-fit">
+    <div className="sticky top-24 h-fit rounded-2xl border border-gray-100/80 bg-white p-5 shadow-sm">
       {/* Header */}
-      <div className="border-b border-gray-100/80 pb-4 mb-4">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <span className="w-1 h-6 bg-amber-600 rounded-full"></span>
+      <div className="mb-4 border-b border-gray-100/80 pb-4">
+        <h2 className="flex items-center gap-2 text-xl font-bold text-gray-800">
+          <span className="h-6 w-1 rounded-full bg-amber-600"></span>
           فیلترها
         </h2>
-        <p className="text-xs text-gray-400 mt-1">دسته‌بندی محصولات</p>
+        <p className="mt-1 text-xs text-gray-400">دسته‌بندی محصولات</p>
       </div>
 
-      {/* Categories List */}
+      {/* Categories */}
       <div className="space-y-1">
-        <div className="text-sm font-medium text-gray-500 mb-3 px-2">
+        <div className="mb-3 px-2 text-sm font-medium text-gray-500">
           دسته‌بندی‌ها
         </div>
-        <ul className="flex flex-col gap-1">
-          {categories?.items.map((category) => (
-            <li key={category.id}>
-              <button className="w-full text-right flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-amber-50/80 transition-all duration-200 group active:scale-[0.98]">
-                <span className="text-sm font-medium text-gray-700 group-hover:text-amber-700 transition-colors">
-                  {category.name}
-                </span>
-                <IoChevronForward className="text-gray-300 text-sm group-hover:text-amber-600 group-hover:translate-x-1 transition-all duration-200" />
-              </button>
-            </li>
-          ))}
+
+        <ul className="flex flex-col gap-2">
+          {categories?.items.map((category) => {
+            const isSelected = selectedCategory === category.id;
+
+            return (
+              <li key={category.id}>
+                <button
+                  onClick={() => onSelectCategory(category.id)}
+                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-3 text-right transition-all duration-200 active:scale-[0.98]
+                    ${
+                      isSelected
+                        ? "border-amber-300 bg-amber-50 shadow-sm"
+                        : "border-transparent hover:border-amber-100 hover:bg-amber-50"
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {isSelected && (
+                      <IoCheckmarkCircle className="text-lg text-amber-600" />
+                    )}
+
+                    <span
+                      className={`text-sm font-medium transition-colors ${
+                        isSelected ? "text-amber-700" : "text-gray-700"
+                      }`}
+                    >
+                      {category.name}
+                    </span>
+                  </div>
+
+                  <IoChevronForward
+                    className={`text-sm transition-all ${
+                      isSelected
+                        ? "text-amber-600"
+                        : "text-gray-300 group-hover:text-amber-500"
+                    }`}
+                  />
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
-      {/* Optional: Clear Filters */}
-      <div className="border-t border-gray-100/80 pt-4 mt-4">
-        <button className="w-full text-center text-xs text-gray-400 hover:text-amber-600 transition-colors py-1.5 rounded-lg hover:bg-amber-50/50">
-          حذف همه فیلترها
-        </button>
-      </div>
+      {/* Clear Filter */}
+      {selectedCategory && (
+        <div className="mt-5 border-t border-gray-100 pt-4">
+          <button
+            onClick={() => onSelectCategory("")}
+            className="w-full rounded-lg py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
+          >
+            حذف فیلتر دسته‌بندی
+          </button>
+        </div>
+      )}
     </div>
   );
 }

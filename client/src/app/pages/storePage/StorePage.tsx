@@ -3,12 +3,24 @@ import { useProducts } from "../../../lib/hooks/useProducts";
 import StoreHeader from "../../layout/component/StoreHeader";
 import FilteredStore from "./FilteredStore";
 import StoreCard from "./StoreCard";
+import { useState } from "react";
 
 function StorePage() {
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
+  const { data: products } = useProducts(1, 10, search);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const [searchParams] = useSearchParams()
-  const search = searchParams.get("search") ?? ""
-  const {data:products} = useProducts(1,10,search)
+  const filteredProducts =
+    products?.items.filter((product) => {
+      if (!selectedCategory) return true;
+
+      return product.categoryId === selectedCategory;
+    }) ?? [];
+    console.log(filteredProducts.map(i => i.categoryId) , "product cat");
+    console.log(selectedCategory, "selected cat");
+    
+    
 
   const handleAddToCart = (productId: string) => {
     console.log(`Product ${productId} added to cart`);
@@ -31,23 +43,28 @@ function StorePage() {
           {/* Filter Section (1/4) */}
           <aside className="w-full lg:w-1/4">
             <div className="sticky top-6 rounded-2xl bg-white p-5 shadow-sm">
-              <FilteredStore />
+              <FilteredStore
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+              />
             </div>
           </aside>
 
           {/* Products Section (3/4) */}
           <section className="w-full lg:w-3/4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {products?.items.map((product) => (
-                <StoreCard
-                  key={product.id}
-                  img={product.image}
-                  categoryName={product.categoryName}
-                  name={product.name}
-                  price={product.price}
-                  onAddToCart={() => handleAddToCart(product.id)}
-                />
-              ))}
+              {filteredProducts?.map((product) =>
+                product.status ? (
+                  <StoreCard
+                    key={product.id}
+                    img={product.image}
+                    categoryName={product.categoryName}
+                    name={product.name}
+                    price={product.price}
+                    onAddToCart={() => handleAddToCart(product.id)}
+                  />
+                ) : null,
+              )}
             </div>
           </section>
         </div>
