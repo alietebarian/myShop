@@ -6,6 +6,7 @@ import ManageProducts from "../pages/product/ManageProducts";
 import ManageCategories from "../pages/dashboard/ManageCategories";
 import PrivateRoute from "./privateRoute";
 import StorePage from "../pages/storePage/StorePage";
+import ProductPage from "../pages/storePage/ProductPage";
 
 export const router = createBrowserRouter([
   {
@@ -46,4 +47,9 @@ export const router = createBrowserRouter([
     path: "/products",
     element: <StorePage/>
   },
+
+  {
+    path: "/products/:id",
+    element: <ProductPage/>
+  }
 ]);

@@ -26,7 +26,9 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, GetPro
                 Price = p.Price,
                 Status = p.Status,
                 CategoryName = p.Category.Name,
-                Stock = p.Stock
+                categoryId = p.CategoryId,
+                Stock = p.Stock,
+                Description = p.Description
             })
             .FirstOrDefaultAsync(cancellationToken);
 

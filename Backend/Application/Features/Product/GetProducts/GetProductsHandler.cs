@@ -37,7 +37,8 @@ public class GetProductsHandler : IRequestHandler<GetProductQuery, PagedResult<G
                 Status = p.Status,
                 CategoryName = p.Category.Name,
                 Stock = p.Stock,
-                categoryId = p.CategoryId
+                categoryId = p.CategoryId,
+                Description = p.Description
             })
             .ToListAsync(cancellationToken);
 

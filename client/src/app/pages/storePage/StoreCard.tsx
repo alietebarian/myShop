@@ -1,4 +1,7 @@
+import { Link } from "react-router-dom";
+
 interface ProductProps {
+  id: string;
   img: string;
   categoryName: string;
   name: string;
@@ -7,6 +10,7 @@ interface ProductProps {
 }
 
 function StoreCard({
+  id,
   img,
   categoryName,
   name,
@@ -15,18 +19,20 @@ function StoreCard({
 }: ProductProps) {
   return (
     <div className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100/80">
-      {/* Image Section */}
-      <div className="relative overflow-hidden bg-gray-50">
-        <img
-          src={img}
-          alt={name}
-          className="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-        />
-        {/* Category Badge */}
-        {/* <span className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-xs font-medium text-amber-700 px-3 py-1 rounded-full shadow-sm border border-gray-100/50">
+      <Link to={`/products/${id}`}>
+        {/* Image Section */}
+        <div className="relative overflow-hidden bg-gray-50">
+          <img
+            src={img}
+            alt={name}
+            className="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+          {/* Category Badge */}
+          {/* <span className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-xs font-medium text-amber-700 px-3 py-1 rounded-full shadow-sm border border-gray-100/50">
           {categoryName}
-        </span> */}
-      </div>
+          </span> */}
+        </div>
+      </Link>
 
       {/* Content Section */}
       <div className="p-4 space-y-3">

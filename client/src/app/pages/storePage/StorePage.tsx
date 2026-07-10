@@ -16,11 +16,7 @@ function StorePage() {
       if (!selectedCategory) return true;
 
       return product.categoryId === selectedCategory;
-    }) ?? [];
-    console.log(filteredProducts.map(i => i.categoryId) , "product cat");
-    console.log(selectedCategory, "selected cat");
-    
-    
+    }) ?? [];   
 
   const handleAddToCart = (productId: string) => {
     console.log(`Product ${productId} added to cart`);
@@ -56,6 +52,7 @@ function StorePage() {
               {filteredProducts?.map((product) =>
                 product.status ? (
                   <StoreCard
+                    id={product.id}
                     key={product.id}
                     img={product.image}
                     categoryName={product.categoryName}
