@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { useProducts } from "../../../lib/hooks/useProducts";
 import StoreHeader from "../../layout/component/StoreHeader";
 import FilteredStore from "./FilteredStore";
@@ -5,7 +6,9 @@ import StoreCard from "./StoreCard";
 
 function StorePage() {
 
-  const {data:products} = useProducts(1,10,"")
+  const [searchParams] = useSearchParams()
+  const search = searchParams.get("search") ?? ""
+  const {data:products} = useProducts(1,10,search)
 
   const handleAddToCart = (productId: string) => {
     console.log(`Product ${productId} added to cart`);
@@ -15,7 +18,8 @@ function StorePage() {
     <div className="min-h-screen bg-gray-100">
       <StoreHeader />
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      {/* <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"> */}
+      <main className="w-full px-8 py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">محصولات</h1>
 
@@ -46,7 +50,6 @@ function StorePage() {
               ))}
             </div>
           </section>
-
         </div>
       </main>
     </div>

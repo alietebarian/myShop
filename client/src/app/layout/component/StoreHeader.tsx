@@ -1,7 +1,20 @@
+import { useEffect, useState } from "react";
 import { IoSearch, IoArrowForward } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function StoreHeader() {
+
+  const [ serach, setSearch ] = useState("")
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate(`/products?search=${encodeURIComponent(serach)}`);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [serach]);
+
   return (
     <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100/80 shadow-sm px-4 sm:px-6">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 h-16 md:h-20">
@@ -19,6 +32,8 @@ function StoreHeader() {
         <div className="flex-1 max-w-xl mx-4 relative group">
           <IoSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors text-xl" />
           <input
+            value={serach}
+            onChange={(e) => setSearch(e.target.value)}
             type="text"
             placeholder="جستجو در همه محصولات..."
             className="w-full pr-12 pl-4 py-2.5 rounded-2xl bg-gray-50/80 border-2 border-amber-500
