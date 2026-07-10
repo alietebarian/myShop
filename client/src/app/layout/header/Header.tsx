@@ -42,7 +42,8 @@ function Header() {
           <BiSearch size={22} />
         </button>
 
-        {/* Navigation - Center-Right */}
+        {/* User Actions - Right side */}
+        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
         <nav className="hidden lg:flex items-center gap-6">
           <Link
             to="/products"
@@ -50,16 +51,7 @@ function Header() {
           >
             همه محصولات
           </Link>
-          <Link
-            to="/about"
-            className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
-          >
-            درباره ما
-          </Link>
         </nav>
-
-        {/* User Actions - Right side */}
-        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
           {/* Admin */}
           <Link
             to="/dashboard"
