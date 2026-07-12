@@ -12,4 +12,7 @@ public class Product
     public int Stock { get; set; }
     public bool Status { get; set; } = true;
     public string Description { get; set; } = null!;
+
+    public ICollection<CartItem> CartItems { get; set; }
+        = new List<CartItem>();
 }
