@@ -1,8 +1,8 @@
-import Header from './header/Header';
+import HomePage from '../pages/homePage/HomePage';
 
 export default function App() {
   
   return (
-    <div><Header/></div>
+    <HomePage/>
   )
 }
