@@ -1,4 +1,6 @@
-﻿using Application.Features.Order.GetMyOrders;
+﻿using Application.Features.Order.CancelOrder;
+using Application.Features.Order.GetMyOrders;
+using Application.Features.Order.GetOrderById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +17,29 @@ public class OrderController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpGet("get all orders")]
     public async Task<IActionResult> GetMyOrders()
     {
         var result = await _mediator.Send(new GetMyOrdersQuery());
 
         return Ok(result);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var result =
+            await _mediator.Send(
+                new GetOrderByIdQuery(id));
+
+        return Ok(result);
+    }
+
+    [HttpPut("{id:guid}/cancel")]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        await _mediator.Send(new CancelOrderComand(id));
+
+        return NoContent();
     }
 }

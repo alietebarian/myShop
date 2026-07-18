@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Application.DependencyInjection;
 
@@ -17,6 +18,13 @@ public static class ApplicationServiceRegistration
 
         services.AddValidatorsFromAssembly(
             Assembly.GetExecutingAssembly());
+
+        //services.AddAutoMapper(
+        //    Assembly.GetExecutingAssembly());
+
+        services.AddAutoMapper(
+    cfg => { },
+    typeof(ApplicationServiceRegistration).Assembly);
 
         return services;
     }

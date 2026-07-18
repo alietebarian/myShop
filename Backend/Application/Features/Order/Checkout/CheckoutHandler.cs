@@ -26,7 +26,7 @@ public class CheckoutHandler : IRequestHandler<CheckoutCommand, Guid>
         ValidationCart(cart);
 
         var order = CreateOrder(userId);
-        CreateOrderitems(order, cart);
+        CreateOrderItems(order, cart);
 
         DecreaseProductStock(cart);
 

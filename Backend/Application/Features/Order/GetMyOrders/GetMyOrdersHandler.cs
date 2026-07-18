@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -9,11 +10,13 @@ public class GetMyOrdersHandler : IRequestHandler<GetMyOrdersQuery, List<OrderDt
 {
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMapper _mapper;
 
-    public GetMyOrdersHandler(ICurrentUserService currentUserService, AppDbContext context)
+    public GetMyOrdersHandler(ICurrentUserService currentUserService, AppDbContext context, IMapper mapper)
     {
         _currentUserService = currentUserService;
         _context = context;
+        _mapper = mapper;
     }
 
     public async Task<List<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
@@ -31,21 +34,23 @@ public class GetMyOrdersHandler : IRequestHandler<GetMyOrdersQuery, List<OrderDt
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        return orders.Select(order => new OrderDto
-        {
-            Id = order.Id,
-            CreatedAt = order.CreatedAt,
-            TotalPrice = order.TotalPrice,
-            Status = order.Status.ToString(),
+        //return orders.Select(order => new OrderDto
+        //{
+        //    Id = order.Id,
+        //    CreatedAt = order.CreatedAt,
+        //    TotalPrice = order.TotalPrice,
+        //    Status = order.Status.ToString(),
 
-            Items = order.items.Select(item => new OrderItemDto
-            {
-                ProductId = item.ProductId,
-                ProductName = item.Product.Name,
-                Price = item.Price,
-                Quantity = item.Quantity
-            }).ToList()
+        //    Items = order.items.Select(item => new OrderItemDto
+        //    {
+        //        ProductId = item.ProductId,
+        //        ProductName = item.Product.Name,
+        //        Price = item.Price,
+        //        Quantity = item.Quantity
+        //    }).ToList()
 
-        }).ToList();
+        //}).ToList();
+
+        return _mapper.Map<List<OrderDto>>(orders);
     }
 }

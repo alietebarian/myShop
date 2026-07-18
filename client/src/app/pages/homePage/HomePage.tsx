@@ -8,7 +8,7 @@ import Header from "../../layout/header/Header";
 export default function HomePage() {
   return (
     <main dir="rtl">
-        <Header/>
+      <Header />
       <HeroSection />
 
       <CategorySection />
@@ -16,7 +16,7 @@ export default function HomePage() {
       <FeaturedProducts />
 
       <WhyCopper />
-      <Footer/>
+      <Footer />
     </main>
   );
 }
