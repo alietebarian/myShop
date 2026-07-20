@@ -4,12 +4,16 @@ import StoreHeader from "../../layout/component/StoreHeader";
 import FilteredStore from "./FilteredStore";
 import StoreCard from "./StoreCard";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useAddItemToCart } from "../../../lib/hooks/useCart";
 
 function StorePage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search") ?? "";
   const { data: products } = useProducts(1, 10, search);
   const [selectedCategory, setSelectedCategory] = useState("");
+    const { mutate: addItemToCart } = useAddItemToCart()
+    const [ addingId, setAddingId ] = useState<string | null>(null)
 
   const filteredProducts =
     products?.items.filter((product) => {
@@ -19,7 +23,22 @@ function StorePage() {
     }) ?? [];   
 
   const handleAddToCart = (productId: string) => {
-    console.log(`Product ${productId} added to cart`);
+    setAddingId(productId);
+
+    addItemToCart(
+      { productId, quantity: 1 },
+      {
+        onSuccess: () => {
+          toast.success("به سبد اضافه شد");
+        },
+        onError: () => {
+          toast.error("خطا در افزودن به سبد");
+        },
+        onSettled: () => {
+          setAddingId(null);
+        },
+      }
+    );
   };
 
   return (
@@ -59,6 +78,7 @@ function StorePage() {
                     name={product.name}
                     price={product.price}
                     onAddToCart={() => handleAddToCart(product.id)}
+                    isAddingToCart={addingId === product.id}
                   />
                 ) : null,
               )}

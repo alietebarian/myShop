@@ -30,12 +30,14 @@ function AuthPage() {
       password,
     });
 
-    login(response.data.accessToken, {
-      userId: response.data.userId,
-      email: response.data.email,
-      fullName: response.data.fullName,
+    login(response.accessToken, {
+      userId: response.userId,
+      email: response.email,
+      fullName: response.fullName,
     });
 
+    console.log(localStorage.getItem('accessToken'));
+    
     navigate("/");
   };
 

@@ -6,10 +6,12 @@ using Application.Features.Cart.RemoveItem;
 using Application.Features.Cart.UpdateCart;
 using Application.Features.Product.CreateProduct;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CartController : ControllerBase
@@ -36,7 +38,7 @@ public class CartController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCart([FromBody] AddItemCommand command)
+    public async Task<IActionResult> AddItem([FromBody] AddItemCommand command)
     {
          await _mediator.Send(command);
 

@@ -32,10 +32,10 @@ public class UpdateQuantityHandler : IRequestHandler<UpdateQuantityCommand>
             throw new KeyNotFoundException("Cart item not found");
 
         if (!item.Product.Status)
-            throw new Exception("Product is inactive.");
+            throw new InvalidOperationException("Product is inactive.");
 
         if (request.Quantity > item.Product.Stock)
-            throw new Exception("Insufficient stock.");
+            throw new InvalidOperationException("Insufficient stock.");
 
         item.Quantity = request.Quantity;
 

@@ -28,7 +28,7 @@ export interface Category {
   id: string;
   name: string;
   status: boolean;
-  productCount: number
+  productCount: number;
 }
 
 export interface CreateCategory {
@@ -82,4 +82,35 @@ export interface PagedResult<T> {
   pageSize: number;
   totalCount: number;
   totalPages: number;
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  productName: string;
+  price: number;
+  quantity: number;
+  total: number;
+}
+
+export interface Cart {
+  id: string;
+  totalPrice: number;
+  items: CartItem[];
+}
+
+export interface AddItemToCart {
+  productId: string;
+  quantity: number;
+}
+
+export interface UpdateCartItemQuantity {
+  quantity: number;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  userId: string;
+  email: string;
+  fullName: string;
 }

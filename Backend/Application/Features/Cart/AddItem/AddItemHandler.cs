@@ -48,12 +48,16 @@ public class AddItemHandler : IRequestHandler<AddItemCommand>
             _context.Carts.Add(cart);
         }
 
-        var item = cart.Items
-            .FirstOrDefault(x => x.ProductId == request.ProductId);
+        var item = cart.Items.FirstOrDefault(x => x.ProductId == request.ProductId);
+        var currentQuantity = item?.Quantity ?? 0;
+        var newQuantity = currentQuantity + request.Quantity;
+
+        if (newQuantity > product.Stock)
+            throw new InvalidOperationException("Insufficient stock.");
 
         if (item is not null)
         {
-            item.Quantity += request.Quantity;
+            item.Quantity = newQuantity;
         }
         else
         {
@@ -63,17 +67,6 @@ public class AddItemHandler : IRequestHandler<AddItemCommand>
                 Quantity = request.Quantity
             });
         }
-
-        if (!product.Status)
-            throw new Exception("Product is inactive.");
-
-        if (request.Quantity > product.Stock)
-            throw new Exception("Insufficient stock.");
-
-        var newQuantity = item.Quantity + request.Quantity;
-
-        if (newQuantity > product.Stock)
-            throw new Exception("Insufficient stock.");
 
         await _context.SaveChangesAsync(cancellationToken);
     }
