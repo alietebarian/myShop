@@ -17,7 +17,6 @@ interface Props {
 
 function CartItemCard({
     id,
-    productId,
     image,
     name,
     price,

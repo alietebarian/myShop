@@ -2,7 +2,6 @@ import ProductHeader from "../../layout/component/ProductHeader";
 import { useCart } from "../../../lib/hooks/useCart";
 import CartItemCard from "./CartItemCard";
 import CartSummary from "./CartSummary";
-import { Link } from "react-router-dom";
 
 function CartPage() {
   const {
@@ -75,44 +74,6 @@ function CartPage() {
 
         </div>
       </div>
-    );
-  }
-
-  if (cart.items.length === 0) {
-    return (
-      <>
-        <ProductHeader />
-
-        <div className="flex h-[70vh] flex-col items-center justify-center gap-6">
-
-          <img
-            src="/empty-cart.svg"
-            className="w-72"
-          />
-
-          <h2 className="text-3xl font-bold">
-            سبد خرید شما خالی است
-          </h2>
-
-          <p className="text-gray-500">
-            هنوز محصولی به سبد خرید اضافه نکرده‌اید.
-          </p>
-
-          <Link
-            to="/store"
-            className="
-            rounded-xl
-            bg-amber-600
-            px-8
-            py-4
-            text-white
-          "
-          >
-            مشاهده محصولات
-          </Link>
-
-        </div>
-      </>
     );
   }
 

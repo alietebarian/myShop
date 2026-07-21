@@ -67,16 +67,16 @@ public class CancelOrderHandler : IRequestHandler<CancelOrderComand>
     private static void ValidateOrder(Domain.Entities.Order order)
     {
         if (order.Status == OrderStatus.Cancelled)
-            throw new Exception("Order is already cancelled.");
+            throw new InvalidOperationException("Order is already cancelled.");
 
         if (order.Status == OrderStatus.Shipped)
-            throw new Exception("Shipped orders cannot be cancelled.");
+            throw new InvalidOperationException("Shipped orders cannot be cancelled.");
 
         if (order.Status == OrderStatus.Delivered)
-            throw new Exception("Delivered orders cannot be cancelled.");
+            throw new InvalidOperationException("Delivered orders cannot be cancelled.");
 
         if (order.Status == OrderStatus.Preparing)
-            throw new Exception("Preparing orders cannot be cancelled.");
+            throw new InvalidOperationException("Preparing orders cannot be cancelled.");
     }
 
     private static void RestoreStock(Domain.Entities.Order order)

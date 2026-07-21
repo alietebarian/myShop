@@ -26,6 +26,9 @@ export default {
   put: <T>(url: string, body: object) =>
     agent.put<T>(url, body).then(responseBody),
 
+  patch: <T>(url: string, body?: object) =>
+    agent.patch<T>(url, body).then(responseBody),
+
   delete: <T>(url: string, config?: AxiosRequestConfig) =>
     agent.delete<T>(url, config).then(responseBody),
 };

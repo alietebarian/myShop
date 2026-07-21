@@ -4,6 +4,7 @@ import { CiUser } from "react-icons/ci";
 import { PiBasketLight } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { useCart } from "../../../lib/hooks/useCart";
+import { HiOutlineClipboardList } from "react-icons/hi";
 
 function Header() {
   const { data: cartItem } = useCart()
@@ -64,6 +65,17 @@ function Header() {
               پنل مدیریت
             </span>
             <RiAdminLine className="text-amber-600 text-lg" />
+          </Link>
+
+          <Link
+            to="/orders"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
+            aria-label="سفارش‌های من"
+          >
+            <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors">
+              سفارش‌های من
+            </span>
+            <HiOutlineClipboardList className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
           </Link>
 
           {/* Login */}

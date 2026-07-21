@@ -169,6 +169,16 @@
   },
   {
     "ContainingType": "Api.Controllers.OrderController",
+    "Method": "GetMyOrders",
+    "RelativePath": "api/Order",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Api.Controllers.OrderController",
     "Method": "GetById",
     "RelativePath": "api/Order/{id}",
     "HttpMethod": "GET",
@@ -187,7 +197,7 @@
     "ContainingType": "Api.Controllers.OrderController",
     "Method": "Cancel",
     "RelativePath": "api/Order/{id}/cancel",
-    "HttpMethod": "PUT",
+    "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -201,9 +211,9 @@
   },
   {
     "ContainingType": "Api.Controllers.OrderController",
-    "Method": "GetMyOrders",
-    "RelativePath": "api/Order/get all orders",
-    "HttpMethod": "GET",
+    "Method": "Checkout",
+    "RelativePath": "api/Order/checkout",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [],

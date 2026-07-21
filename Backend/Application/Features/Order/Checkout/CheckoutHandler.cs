@@ -47,7 +47,7 @@ public class CheckoutHandler : IRequestHandler<CheckoutCommand, Guid>
         return userId;
     }
 
-    public async Task<Domain.Entities.Cart> GetCart(string userId, CancellationToken cancellationToken)
+    private async Task<Domain.Entities.Cart> GetCart(string userId, CancellationToken cancellationToken)
     {
         var cart = await _context.Carts
             .Include(x => x.Items)
@@ -56,25 +56,25 @@ public class CheckoutHandler : IRequestHandler<CheckoutCommand, Guid>
 
         if(cart == null)
         {
-            throw new Exception("Cart not found.");
+            throw new KeyNotFoundException("Cart not found.");
         }
 
         return cart;
     }
 
-    public static void ValidationCart(Domain.Entities.Cart cart)
+    private static void ValidationCart(Domain.Entities.Cart cart)
     {
         if (!cart.Items.Any())
-            throw new Exception("Cart is empty.");
+            throw new InvalidOperationException("Cart is empty.");
 
         foreach (var item in cart.Items)
         {
             if (!item.Product.Status)
-                throw new Exception(
+                throw new InvalidOperationException(
                     $"{item.Product.Name} is inactive.");
 
             if (item.Quantity > item.Product.Stock)
-                throw new Exception(
+                throw new InvalidOperationException(
                     $"{item.Product.Name} has insufficient stock.");
         }
     }

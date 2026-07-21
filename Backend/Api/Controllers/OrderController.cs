@@ -1,11 +1,14 @@
 ﻿using Application.Features.Order.CancelOrder;
+using Application.Features.Order.Checkout;
 using Application.Features.Order.GetMyOrders;
 using Application.Features.Order.GetOrderById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class OrderController : ControllerBase
@@ -17,7 +20,7 @@ public class OrderController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("get all orders")]
+    [HttpGet]
     public async Task<IActionResult> GetMyOrders()
     {
         var result = await _mediator.Send(new GetMyOrdersQuery());
@@ -35,11 +38,19 @@ public class OrderController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut("{id:guid}/cancel")]
+    [HttpPatch("{id:guid}/cancel")]
     public async Task<IActionResult> Cancel(Guid id)
     {
         await _mediator.Send(new CancelOrderComand(id));
 
         return NoContent();
+    }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> Checkout()
+    {
+        var orderId = await _mediator.Send(new CheckoutCommand());
+
+        return CreatedAtAction(nameof(GetById), new { id = orderId }, orderId);
     }
 }

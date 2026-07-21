@@ -1,6 +1,4 @@
-﻿using Application.Features.Order.GetMyOrders;
-using Application.Features.Order.GetOrderById;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
 
 namespace Application.Mapping;
@@ -8,11 +6,12 @@ namespace Application.Mapping;
 public class OrderMappingProfile : Profile
 {
     public OrderMappingProfile()
-    {
-        CreateMap<Order, OrderDto>();
-        CreateMap<OrderItem, OrderItemDto>();
-        CreateMap<Order, OrderDetailsDto>();
+    { // GetOrderById
+        CreateMap<Order, Features.Order.GetOrderById.OrderDetailsDto>();
+        CreateMap<OrderItem, Features.Order.GetOrderById.OrderItemDetailsDto>();
 
-        CreateMap<OrderItem, OrderItemDetailsDto>();
+        // GetMyOrders
+        CreateMap<Order, Features.Order.GetMyOrders.OrderDto>();
+        CreateMap<OrderItem, Features.Order.GetMyOrders.OrderItemDto>();
     }
 }

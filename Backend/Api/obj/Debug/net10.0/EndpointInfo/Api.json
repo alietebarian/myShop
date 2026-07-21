@@ -291,7 +291,7 @@
         }
       }
     },
-    "/api/Order/get all orders": {
+    "/api/Order": {
       "get": {
         "tags": [
           "Order"
@@ -327,7 +327,7 @@
       }
     },
     "/api/Order/{id}/cancel": {
-      "put": {
+      "patch": {
         "tags": [
           "Order"
         ],
@@ -341,6 +341,18 @@
               "format": "uuid"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Order/checkout": {
+      "post": {
+        "tags": [
+          "Order"
         ],
         "responses": {
           "200": {

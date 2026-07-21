@@ -1,6 +1,8 @@
 import { FiTrash2 } from "react-icons/fi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { useClearCart } from "../../../lib/hooks/useCart";
+import { useCheckout } from "../../../lib/hooks/useOrder";
 
 interface Props {
     totalItems: number;
@@ -11,7 +13,10 @@ function CartSummary({
     totalItems,
     totalPrice,
 }: Props) {
-    const { mutate: clearCart, isPending } = useClearCart();
+    const navigate = useNavigate();
+
+    const { mutate: clearCart, isPending: isClearing } = useClearCart();
+    const { mutate: checkout, isPending: isCheckingOut } = useCheckout();
 
     const handleClear = () => {
         clearCart(undefined, {
@@ -20,6 +25,18 @@ function CartSummary({
             },
             onError: () => {
                 toast.error("خطا در حذف سبد خرید");
+            },
+        });
+    };
+
+    const handleCheckout = () => {
+        checkout(undefined, {
+            onSuccess: (orderId) => {
+                toast.success("سفارش شما با موفقیت ثبت شد");
+                navigate(`/orders/${orderId}`);
+            },
+            onError: () => {
+                toast.error("خطا در ثبت سفارش");
             },
         });
     };
@@ -68,6 +85,8 @@ function CartSummary({
                 </div>
 
                 <button
+                    onClick={handleCheckout}
+                    disabled={isCheckingOut || isClearing}
                     className="
             mt-5
             w-full
@@ -78,14 +97,15 @@ function CartSummary({
             text-white
             transition
             hover:bg-amber-700
+            disabled:opacity-50
           "
                 >
-                    ثبت سفارش
+                    {isCheckingOut ? "در حال ثبت سفارش..." : "ثبت سفارش"}
                 </button>
 
                 <button
                     onClick={handleClear}
-                    disabled={isPending}
+                    disabled={isCheckingOut}
                     className="
             mt-3
             flex

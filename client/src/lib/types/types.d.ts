@@ -114,3 +114,18 @@ export interface AuthResponse {
   email: string;
   fullName: string;
 }
+
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  price: number;
+  quantity: number;
+}
+
+export interface Order {
+  id: string;
+  createdAt: string;
+  totalPrice: number;
+  status: string;
+  items: OrderItem[];
+}

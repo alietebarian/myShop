@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -26,31 +27,11 @@ public class GetMyOrdersHandler : IRequestHandler<GetMyOrdersQuery, List<OrderDt
         if (string.IsNullOrWhiteSpace(userId))
             throw new UnauthorizedAccessException();
 
-        var orders = await _context.Orders
+        return await _context.Orders
             .AsNoTracking()
             .Where(x => x.userId == userId)
-            .Include(x => x.items)
-            .ThenInclude(x => x.Product)
             .OrderByDescending(x => x.CreatedAt)
+            .ProjectTo<OrderDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
-
-        //return orders.Select(order => new OrderDto
-        //{
-        //    Id = order.Id,
-        //    CreatedAt = order.CreatedAt,
-        //    TotalPrice = order.TotalPrice,
-        //    Status = order.Status.ToString(),
-
-        //    Items = order.items.Select(item => new OrderItemDto
-        //    {
-        //        ProductId = item.ProductId,
-        //        ProductName = item.Product.Name,
-        //        Price = item.Price,
-        //        Quantity = item.Quantity
-        //    }).ToList()
-
-        //}).ToList();
-
-        return _mapper.Map<List<OrderDto>>(orders);
     }
 }
