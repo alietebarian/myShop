@@ -3,8 +3,11 @@ import { RiAdminLine } from "react-icons/ri";
 import { CiUser } from "react-icons/ci";
 import { PiBasketLight } from "react-icons/pi";
 import { Link } from "react-router-dom";
+import { useCart } from "../../../lib/hooks/useCart";
 
 function Header() {
+  const { data: cartItem } = useCart()
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 h-16 md:h-20">
@@ -44,14 +47,14 @@ function Header() {
 
         {/* User Actions - Right side */}
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-        <nav className="hidden lg:flex items-center gap-6">
-          <Link
-            to="/products"
-            className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
-          >
-            همه محصولات
-          </Link>
-        </nav>
+          <nav className="hidden lg:flex items-center gap-6">
+            <Link
+              to="/products"
+              className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
+            >
+              همه محصولات
+            </Link>
+          </nav>
           {/* Admin */}
           <Link
             to="/dashboard"
@@ -82,7 +85,7 @@ function Header() {
           >
             <PiBasketLight className="text-gray-600 text-2xl group-hover:text-amber-700 group-hover:scale-110 transition-all" />
             <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-              ۰
+              {cartItem?.items.length}
             </span>
           </Link>
         </div>
