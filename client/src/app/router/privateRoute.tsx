@@ -6,10 +6,10 @@ export default function PrivateRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const {token} = useAuth();
+  const {user} = useAuth();
 
-  if (!token) {
-    return <Navigate to="/login" />
+  if (user?.role !== "Admin") {
+    return <Navigate to="/" />
   }
 
   return children;
