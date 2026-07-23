@@ -8,7 +8,6 @@ namespace Application.Features.Product.CreateProduct;
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 {
     private readonly AppDbContext _context;
-
     public CreateProductHandler(AppDbContext context)
     {
         _context = context;

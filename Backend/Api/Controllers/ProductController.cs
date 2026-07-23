@@ -3,6 +3,7 @@ using Application.Features.Product.DeleteProduct;
 using Application.Features.Product.EditProduct;
 using Application.Features.Product.GetByIdProduct;
 using Application.Features.Product.GetProducts;
+using Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,11 @@ namespace Api.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IMediator _mediator;
-
-    public ProductController(IMediator mediator)
+    private readonly IFileService _fileService;
+    public ProductController(IMediator mediator, IFileService fileService)
     {
         _mediator = mediator;
+        _fileService = fileService;
     }
 
     [HttpGet]
@@ -47,11 +49,23 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto dto)
     {
-        var product = await _mediator.Send(command);
+        var imagePath = await _fileService.SaveImageAsync(dto.Image, "products");
+        var command = new CreateProductCommand(
+            imagePath,
+            dto.Name,
+            dto.CategoryName,
+            dto.Unit,
+            dto.Price,
+            dto.Stock,
+            dto.Description
+        );
 
-        return Ok(product);
+        var productId = await _mediator.Send(command);
+
+        return Ok(new {id = productId});
     }
 
     [HttpPut("{id}")]

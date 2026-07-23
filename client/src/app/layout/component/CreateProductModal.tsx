@@ -5,7 +5,7 @@ import { useCategories } from "../../../lib/hooks/useCategories";
 interface CreateProductModalProps {
   onClose: () => void;
   onSave: (data: {
-    image: string;
+    image: File;
     name: string;
     categoryName: string;
     unit: string;
@@ -16,20 +16,46 @@ interface CreateProductModalProps {
 }
 
 function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
-  const { data: categories } = useCategories();
+  const { data: categories } = useCategories(1, 100, "");
 
   const [name, setName] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [description, setDescription] = useState("");
 
   const inputClass =
     "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 outline-none transition focus:border-amber-500 focus:ring-4 focus:ring-amber-100";
 
   const labelClass = "mb-2 block text-sm font-semibold text-slate-700";
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+
+      // پاک کردن URL قبلی برای جلوگیری از leak حافظه
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSave = () => {
+    if (!imageFile) return;
+
+    onSave({
+      image: imageFile,
+      name,
+      categoryName,
+      unit,
+      price: Number(price),
+      stock: Number(stock),
+      description,
+    });
+  };
 
   return (
     <div className="flex h-[80%] max-h-150 w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
@@ -70,7 +96,7 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
             >
               <option value="">انتخاب دسته‌بندی</option>
 
-              {categories?.map((category) => (
+              {categories?.items?.map((category) => (
                 <option key={category.id} value={category.name}>
                   {category.name}
                 </option>
@@ -116,14 +142,22 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
 
           {/* Image */}
           <div>
-            <label className={labelClass}>آدرس تصویر</label>
+            <label className={labelClass}>تصویر محصول</label>
 
             <input
-              className={inputClass}
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              placeholder="products/copper-pot.jpg"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className={`${inputClass} cursor-pointer file:ml-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-white file:hover:bg-amber-700`}
             />
+
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="پیش‌نمایش"
+                className="mt-3 h-32 w-32 rounded-lg object-cover border border-slate-200"
+              />
+            )}
           </div>
 
           {/* Description */}
@@ -150,22 +184,13 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
         </button>
 
         <button
-          onClick={() =>
-            onSave({
-              image,
-              name,
-              categoryName,
-              unit,
-              price: Number(price),
-              stock: Number(stock),
-              description,
-            })
-          }
+          onClick={handleSave}
           className="rounded-xl bg-amber-600 px-6 py-2.5 font-semibold text-white shadow-md transition hover:bg-amber-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300"
           disabled={
             !name.trim() ||
             !categoryName ||
             !unit.trim() ||
+            !imageFile ||
             price <= 0 ||
             stock < 0
           }

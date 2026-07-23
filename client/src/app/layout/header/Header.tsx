@@ -49,11 +49,11 @@ function Header() {
         </button>
 
         {/* User Actions - Right side */}
-        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 md:gap-2 shrink-0">
           <nav className="hidden lg:flex items-center gap-6">
             <Link
               to="/products"
-              className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent hover:border-amber-600 pb-0.5"
+              className="text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors border-b-2 border-transparent pb-0.5"
             >
               همه محصولات
             </Link>

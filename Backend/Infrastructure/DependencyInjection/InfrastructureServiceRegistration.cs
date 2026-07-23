@@ -11,6 +11,7 @@ public static class InfrastructureServiceRegistration
     {
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IFileService, FileService>();
 
         return services;
     }

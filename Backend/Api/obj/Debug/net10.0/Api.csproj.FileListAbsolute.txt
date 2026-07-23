@@ -176,3 +176,4 @@ E:\project\Backend\Api\obj\Debug\net10.0\refint\Api.dll
 E:\project\Backend\Api\obj\Debug\net10.0\Api.pdb
 E:\project\Backend\Api\obj\Debug\net10.0\Api.genruntimeconfig.cache
 E:\project\Backend\Api\obj\Debug\net10.0\ref\Api.dll
+E:\project\Backend\Api\bin\Debug\net10.0\Api.staticwebassets.runtime.json

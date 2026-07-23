@@ -20,7 +20,7 @@ export default {
   get: <T>(url: string, config?: AxiosRequestConfig) =>
     agent.get<T>(url, config).then(responseBody),
 
-  post: <T>(url: string, body: object) =>
+  post: <T>(url: string, body: object | FormData) =>
     agent.post<T>(url, body).then(responseBody),
 
   put: <T>(url: string, body: object) =>

@@ -56,7 +56,7 @@ export interface Product {
 }
 
 export interface CreateProduct {
-  image: string;
+  image: File;
   name: string;
   price: number;
   categoryName: string;
