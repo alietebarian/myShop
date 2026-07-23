@@ -73,17 +73,20 @@ function Header() {
               </Link>
             ) : null
           }
-
-          <Link
-            to="/orders"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
-            aria-label="سفارش‌های من"
-          >
-            <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors">
-              سفارش‌های من
-            </span>
-            <HiOutlineClipboardList className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
-          </Link>
+          {
+            token && (
+              <Link
+                to="/orders"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
+                aria-label="سفارش‌های من"
+              >
+                <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors">
+                  سفارش‌های من
+                </span>
+                <HiOutlineClipboardList className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
+              </Link>
+            )
+          }
 
           {/* Login / logout */}
           {token ? (
@@ -106,16 +109,20 @@ function Header() {
           )}
 
           {/* Cart */}
-          <Link
-            to="/cart"
-            className="relative p-2 rounded-full hover:bg-gray-50 transition-all group"
-            aria-label="سبد خرید"
-          >
-            <PiBasketLight className="text-gray-600 text-2xl group-hover:text-amber-700 group-hover:scale-110 transition-all" />
-            <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-              {cartItem?.items.length}
-            </span>
-          </Link>
+          {
+            token && (
+              <Link
+                to="/cart"
+                className="relative p-2 rounded-full hover:bg-gray-50 transition-all group"
+                aria-label="سبد خرید"
+              >
+                <PiBasketLight className="text-gray-600 text-2xl group-hover:text-amber-700 group-hover:scale-110 transition-all" />
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  {cartItem?.items.length}
+                </span>
+              </Link>
+            )
+          }
         </div>
       </div>
     </header>
