@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -54,6 +54,7 @@ builder.Services
                             jwtSettings.SecretKey))
             };
     });
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthorization();
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();

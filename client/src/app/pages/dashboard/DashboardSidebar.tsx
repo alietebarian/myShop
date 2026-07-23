@@ -10,7 +10,6 @@ function DashboardSidebar() {
   const [closeSidebar, setCloseSidebar] = useState(false);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   
-  
 
   const menuClass = (isActive: boolean) =>
     `group flex items-center ${

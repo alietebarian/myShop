@@ -34,10 +34,9 @@ function AuthPage() {
       userId: response.userId,
       email: response.email,
       fullName: response.fullName,
+      role: response.role
     });
-
-    console.log(localStorage.getItem('accessToken'));
-    
+        
     navigate("/");
   };
 

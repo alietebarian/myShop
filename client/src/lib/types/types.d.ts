@@ -15,6 +15,7 @@ export interface User {
   userId: string;
   email: string;
   fullName: string;
+  role: string
 }
 
 export interface LoginResponse {
@@ -113,6 +114,7 @@ export interface AuthResponse {
   userId: string;
   email: string;
   fullName: string;
+  role: string
 }
 
 export interface OrderItem {

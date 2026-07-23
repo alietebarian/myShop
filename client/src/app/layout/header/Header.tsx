@@ -5,9 +5,11 @@ import { PiBasketLight } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { useCart } from "../../../lib/hooks/useCart";
 import { HiOutlineClipboardList } from "react-icons/hi";
+import { useAuth } from "../../../features/context/useAuth";
 
 function Header() {
   const { data: cartItem } = useCart()
+  const { user, token, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm px-4 md:px-8">
@@ -57,15 +59,20 @@ function Header() {
             </Link>
           </nav>
           {/* Admin */}
-          <Link
-            to="/dashboard"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-amber-50 transition-all group"
-          >
-            <span className="text-xs font-medium text-amber-700 group-hover:text-amber-800">
-              پنل مدیریت
-            </span>
-            <RiAdminLine className="text-amber-600 text-lg" />
-          </Link>
+          {
+            user?.role === "Admin" ? (
+
+              <Link
+                to="/dashboard"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-amber-50 transition-all group"
+              >
+                <span className="text-xs font-medium text-amber-700 group-hover:text-amber-800">
+                  پنل مدیریت
+                </span>
+                <RiAdminLine className="text-amber-600 text-lg" />
+              </Link>
+            ) : null
+          }
 
           <Link
             to="/orders"
@@ -78,16 +85,25 @@ function Header() {
             <HiOutlineClipboardList className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
           </Link>
 
-          {/* Login */}
-          <Link
-            to="/login"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
-          >
-            <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors hidden sm:inline">
-              ورود / ثبت نام
+          {/* Login / logout */}
+          {token ? (
+            <span
+              onClick={logout}
+              className="text-xs cursor-pointer font-medium text-gray-600 hover:text-amber-700 transition-colors hidden sm:inline"
+            >
+              خروج از حساب کاربری
             </span>
-            <CiUser className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
-          </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-all group"
+            >
+              <span className="text-xs font-medium text-gray-600 group-hover:text-amber-700 transition-colors hidden sm:inline">
+                ورود / ثبت نام
+              </span>
+              <CiUser className="text-gray-600 text-xl group-hover:text-amber-700 transition-colors" />
+            </Link>
+          )}
 
           {/* Cart */}
           <Link
