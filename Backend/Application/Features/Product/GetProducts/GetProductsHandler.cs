@@ -25,6 +25,7 @@ public class GetProductsHandler : IRequestHandler<GetProductQuery, PagedResult<G
         var totalCount = await query.CountAsync(cancellationToken);
 
         var products = await query
+            .AsNoTracking()
             .OrderBy(x => x.Name)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -37,6 +38,7 @@ public class GetProductsHandler : IRequestHandler<GetProductQuery, PagedResult<G
                 Status = p.Status,
                 CategoryName = p.Category.Name,
                 Stock = p.Stock,
+                Unit = p.Unit,
                 categoryId = p.CategoryId,
                 Description = p.Description
             })

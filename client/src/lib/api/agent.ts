@@ -23,7 +23,7 @@ export default {
   post: <T>(url: string, body: object | FormData) =>
     agent.post<T>(url, body).then(responseBody),
 
-  put: <T>(url: string, body: object) =>
+  put: <T>(url: string, body: object | FormData) =>
     agent.put<T>(url, body).then(responseBody),
 
   patch: <T>(url: string, body?: object) =>

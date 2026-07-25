@@ -5,7 +5,7 @@ namespace Application.Features.Product.EditProduct;
 public record EditProductCommand
 (
     Guid id,
-    string Image,
+    string? Image,
     string Name,
     Guid CategoryId,
     string Unit,

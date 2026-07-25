@@ -1,4 +1,5 @@
-﻿using Application.Features.Product.CreateProduct;
+﻿using Api.Dtos;
+using Application.Features.Product.CreateProduct;
 using Application.Features.Product.DeleteProduct;
 using Application.Features.Product.EditProduct;
 using Application.Features.Product.GetByIdProduct;
@@ -69,12 +70,38 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> EditProduct([FromBody] EditProductCommand command, Guid id)
+    public async Task<IActionResult> EditProduct([FromForm] EditProductDto dto, Guid id)
     {
-        var product = new EditProductCommand(id, command.Image, command.Name, command.CategoryId, command.Unit, command.Price, command.Stock, command.Status, command.Description);
+        string? imagePath = null;
 
-        await _mediator.Send(product);
+        // فقط اگه فایل جدید فرستاده شده بود، ذخیره‌اش کن
+        if (dto.Image != null && dto.Image.Length > 0)
+        {
+            imagePath = await _fileService.SaveImageAsync(dto.Image, "products");
+        }
 
-        return Ok();
+        var command = new EditProductCommand(
+            id,
+            imagePath, // اگه فایل نیومده بود null می‌مونه
+            dto.Name,
+            dto.CategoryId,
+            dto.Unit,
+            dto.Price,
+            dto.Stock,
+            dto.Status,
+            dto.Description
+        );
+
+        try
+        {
+            await _mediator.Send(command);
+            return NoContent();
+        }
+        catch
+        {
+            if (imagePath != null)
+                _fileService.DeleteImage(imagePath); // rollback عکس جدید اگه خطا خورد
+            throw;
+        }
     }
 }

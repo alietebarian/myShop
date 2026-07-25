@@ -9,7 +9,7 @@ interface ProductModalProps {
   price: number;
   stock: number;
   description: string;
-  image: string;
+  image: string; // مسیر عکس فعلی که از سرور اومده
   status: boolean;
 
   onClose: () => void;
@@ -20,13 +20,14 @@ interface ProductModalProps {
     price: number;
     stock: number;
     description: string;
-    image: string;
+    image?: File; // فقط اگه عکس جدید انتخاب شد
     status: boolean;
   }) => void;
 }
 
 function EditProductModal({
   initialName,
+  categoryId,
   unit,
   price,
   stock,
@@ -39,18 +40,32 @@ function EditProductModal({
   const { data: categories } = useCategories(1, 100, "");
 
   const [name, setName] = useState(initialName);
-  const [catId, setCatId] = useState("");
+  const [catId, setCatId] = useState(categoryId); // باگ قبلی اینجا رفع شد
   const [unitValue, setUnitValue] = useState(unit);
   const [priceValue, setPriceValue] = useState(price);
   const [stockValue, setStockValue] = useState(stock);
   const [desc, setDesc] = useState(description);
-  const [imageValue, setImageValue] = useState(image);
   const [statusValue, setStatusValue] = useState(status);
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const inputClass =
     "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100";
 
   const labelClass = "text-sm font-semibold text-slate-700";
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  // آدرس عکس فعلی روی سرور (اگه عکس جدید انتخاب نشده)
+  const currentImageUrl = `${import.meta.env.VITE_API_URL}${image}`;
 
   return (
     <div className="flex h-[80%] max-h-150 w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
@@ -131,11 +146,22 @@ function EditProductModal({
           {/* Image */}
           <div>
             <label className={labelClass}>تصویر</label>
-            <input
-              className={inputClass}
-              value={imageValue}
-              onChange={(e) => setImageValue(e.target.value)}
+
+            <img
+              src={previewUrl ?? currentImageUrl}
+              alt="تصویر محصول"
+              className="mt-2 mb-3 h-32 w-32 rounded-lg border border-slate-200 object-cover"
             />
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className={`${inputClass} cursor-pointer file:ml-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-white file:hover:bg-amber-700`}
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              در صورتی که عکس جدیدی انتخاب نکنید، عکس فعلی حفظ می‌شود.
+            </p>
           </div>
 
           {/* Status */}
@@ -181,7 +207,7 @@ function EditProductModal({
               price: Number(priceValue),
               stock: Number(stockValue),
               description: desc,
-              image: imageValue || "",
+              image: imageFile ?? undefined, // فقط اگه فایل جدید انتخاب شده بود
               status: statusValue,
             })
           }

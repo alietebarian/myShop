@@ -6,10 +6,6 @@ public class EditProductValidator : AbstractValidator<EditProductCommand>
 {
     public EditProductValidator()
     {
-        RuleFor(x => x.Image)
-            .NotEmpty().WithMessage("Image is required.")
-            .MaximumLength(500);
-
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(150);

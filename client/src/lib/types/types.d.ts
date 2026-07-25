@@ -67,7 +67,7 @@ export interface CreateProduct {
 
 export interface EditProduct {
   id: string;
-  image: string;
+  image?: File;
   name: string;
   categoryName: string;
   price: number;

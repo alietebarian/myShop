@@ -17,6 +17,7 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, GetPro
     public async Task<GetProductDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _context.Products
+            .AsNoTracking()
             .Where(x => x.Id == request.Id)
             .Select(p => new GetProductDto
             {
@@ -25,6 +26,7 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, GetPro
                 Name = p.Name,
                 Price = p.Price,
                 Status = p.Status,
+                Unit = p.Unit,
                 CategoryName = p.Category.Name,
                 categoryId = p.CategoryId,
                 Stock = p.Stock,

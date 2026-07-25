@@ -1,8 +1,8 @@
+import { getImageUrl } from "../../../lib/hooks/getImageUrl";
 import type { Product } from "../../../lib/types/types";
 
 interface ProductTableProps {
   products: Product[];
-  // onAdd: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete?: (id: string) => void;
 }
@@ -25,14 +25,15 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
           </thead>
 
           <tbody>
-            {products.map((product, index) => (
+            {products.map((product) => (
               <tr
-                key={index}
+                key={product.id}
                 className="border-b border-slate-100 text-center transition hover:bg-orange-50/40"
               >
                 <td className="px-6 py-4">
                   <img
-                    src={product.image}
+                    src={getImageUrl(product.image)}
+                    alt={product.name}
                     className="mx-auto h-16 w-16 rounded-xl object-cover"
                   />
                 </td>

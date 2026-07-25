@@ -6,6 +6,7 @@ import StoreCard from "./StoreCard";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAddItemToCart } from "../../../lib/hooks/useCart";
+import { getImageUrl } from "../../../lib/hooks/getImageUrl";
 
 function StorePage() {
   const [searchParams] = useSearchParams();
@@ -73,7 +74,7 @@ function StorePage() {
                   <StoreCard
                     id={product.id}
                     key={product.id}
-                    img={product.image}
+                    img={getImageUrl(product.image)}
                     categoryName={product.categoryName}
                     name={product.name}
                     price={product.price}

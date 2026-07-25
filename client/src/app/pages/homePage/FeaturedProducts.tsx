@@ -3,6 +3,7 @@ import { useAddItemToCart } from "../../../lib/hooks/useCart";
 import { useProducts } from "../../../lib/hooks/useProducts";
 import StoreCard from "../storePage/StoreCard";
 import { toast } from "sonner";
+import { getImageUrl } from "../../../lib/hooks/getImageUrl";
 
 export default function FeaturedProducts() {
   const { data, isLoading } = useProducts(1, 8, "");
@@ -50,7 +51,7 @@ gap-6
             <StoreCard
               key={product.id}
               id={product.id}
-              img={product.image}
+              img={getImageUrl(product.image)}
               categoryName={product.categoryName}
               name={product.name}
               price={product.price}
