@@ -8,7 +8,7 @@ public class AddItemValidator : AbstractValidator<AddItemCommand>
     {
         RuleFor(x => x.ProductId)
             .NotEmpty()
-            .WithMessage("Product is required.");
+        .WithMessage("Product is required.");
 
         RuleFor(x => x.Quantity)
             .GreaterThan(0)

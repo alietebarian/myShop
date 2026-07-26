@@ -1,8 +1,13 @@
+using Api.Middlewares;
 using Application.Common;
+using Application.Common.Behaviors;
 using Application.DependencyInjection;
+using Application.Features.Product.CreateProduct;
 using Domain.Entities;
+using FluentValidation;
 using Infrastructure.DependencyInjection;
 using Infrastructure.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddValidatorsFromAssembly(typeof(CreateProductValidator).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -65,6 +72,8 @@ builder.Services
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseStaticFiles();
 
 using (var scope = app.Services.CreateScope())
