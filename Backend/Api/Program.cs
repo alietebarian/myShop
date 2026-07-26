@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddValidatorsFromAssembly(typeof(CreateProductValidator).Assembly);
+//builder.Services.AddValidatorsFromAssembly(typeof(CreateProductValidator).Assembly);
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddDbContext<AppDbContext>(options =>

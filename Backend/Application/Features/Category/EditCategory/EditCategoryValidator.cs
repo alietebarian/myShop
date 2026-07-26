@@ -1,5 +1,4 @@
-﻿using Application.Features.Category.CreateCategory;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Features.Category.EditCategory;
 public class EditCategoryValidator : AbstractValidator<EditCategoryCommand>

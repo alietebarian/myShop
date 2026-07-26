@@ -16,9 +16,11 @@ import { useState } from "react";
 import ProductModal from "../../layout/component/EditProductModal";
 import CreateProductModal from "../../layout/component/CreateProductModal";
 
-import type { Product } from "../../../lib/types/types";
+import type { CreateProduct, Product } from "../../../lib/types/types";
 import { IoIosSearch } from "react-icons/io";
 import { useCategories } from "../../../lib/hooks/useCategories";
+import { toast } from "sonner";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
 
 function ManageProducts() {
   /* ---------------- pagination + filters ---------------- */
@@ -56,19 +58,35 @@ function ManageProducts() {
   };
 
   const handleSave = (data: any) => {
-    if (!selectedProduct) return;
+    if(!selectedProduct) return
 
-    updateProduct.mutate({
-      id: selectedProduct.id,
-      data,
-    });
-
-    setSelectedProduct(null);
+    updateProduct.mutate(
+      {id: selectedProduct.id, data},
+      {
+        onSuccess: () => {
+          toast.success("محصول با موفقیت ویرایش شد")
+          setSelectedProduct(null)
+        },
+        onError: (error) => {
+          toast.error(getErrorMessage(error))
+        }
+      }
+    )
   };
 
-  const handleCreate = (data: any) => {
-    createProduct.mutate(data);
-    setIsCreateModalOpen(false);
+  const handleCreate = (data: CreateProduct) => {
+    // createProduct.mutate(data);
+    // setIsCreateModalOpen(false);
+
+    createProduct.mutate(data, {
+      onSuccess: () => {
+        toast.success("محصول با موفقیت اضافه شد")
+        setIsCreateModalOpen(false)
+      },
+      onError: (error) => {
+        toast.error(getErrorMessage(error))
+      }
+    })
   };
 
   /* ---------------- UI ---------------- */
@@ -204,11 +222,10 @@ function ManageProducts() {
             <button
               key={i}
               onClick={() => setPageNumber(i + 1)}
-              className={`h-10 w-10 rounded-xl font-semibold transition-all ${
-                pageNumber === i + 1
-                  ? "bg-orange-500 text-white shadow-lg"
-                  : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
-              }`}
+              className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
+                ? "bg-orange-500 text-white shadow-lg"
+                : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
+                }`}
             >
               {i + 1}
             </button>

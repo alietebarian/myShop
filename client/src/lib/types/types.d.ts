@@ -15,7 +15,7 @@ export interface User {
   userId: string;
   email: string;
   fullName: string;
-  role: string
+  role: string;
 }
 
 export interface LoginResponse {
@@ -114,7 +114,7 @@ export interface AuthResponse {
   userId: string;
   email: string;
   fullName: string;
-  role: string
+  role: string;
 }
 
 export interface OrderItem {
@@ -130,4 +130,10 @@ export interface Order {
   totalPrice: number;
   status: string;
   items: OrderItem[];
+}
+
+export interface ApiErrorResponse {
+  title: string;
+  status: number;
+  errors?: Record<string, string[]>;
 }

@@ -2,12 +2,14 @@ import DashboardHeader from "./DashboardHeader";
 import CategoryCart from "../../layout/component/CategoryCart";
 import CategoryModal from "../../layout/component/CategoryModal";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   useCreateCategory,
   useUpdateCategory,
   useCategories,
 } from "../../../lib/hooks/useCategories";
 import type { Category } from "../../../lib/types/types";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
 
 type ModalMode = "create" | "edit";
 
@@ -42,13 +44,20 @@ function ManageCategories() {
   };
 
   const toggleCategoryStatus = (category: Category) => {
-    updateCategory.mutate({
-      id: category.id,
-      data: {
-        name: category.name,
-        status: !category.status,
+    updateCategory.mutate(
+      {
+        id: category.id,
+        data: {
+          name: category.name,
+          status: !category.status,
+        },
       },
-    });
+      {
+        onError: (error) => {
+          toast.error(getErrorMessage(error));
+        },
+      },
+    );
   };
 
   return (
@@ -65,7 +74,13 @@ function ManageCategories() {
                 createCategory.mutate(
                   { name },
                   {
-                    onSuccess: () => setOpenModal(false),
+                    onSuccess: () => {
+                      toast.success("دسته‌بندی با موفقیت اضافه شد");
+                      setOpenModal(false);
+                    },
+                    onError: (error) => {
+                      toast.error(getErrorMessage(error));
+                    },
                   },
                 );
               } else if (selectedCategory) {
@@ -75,7 +90,13 @@ function ManageCategories() {
                     data: { name },
                   },
                   {
-                    onSuccess: () => setOpenModal(false),
+                    onSuccess: () => {
+                      toast.success("دسته‌بندی با موفقیت ویرایش شد");
+                      setOpenModal(false);
+                    },
+                    onError: (error) => {
+                      toast.error(getErrorMessage(error));
+                    },
                   },
                 );
               }
@@ -169,11 +190,10 @@ function ManageCategories() {
               <button
                 key={i}
                 onClick={() => setPageNumber(i + 1)}
-                className={`h-10 w-10 rounded-xl font-semibold transition-all ${
-                  pageNumber === i + 1
+                className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
                     ? "bg-orange-500 text-white shadow-lg"
                     : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
-                }`}
+                  }`}
               >
                 {i + 1}
               </button>
