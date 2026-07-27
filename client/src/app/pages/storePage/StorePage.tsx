@@ -9,19 +9,24 @@ import { useAddItemToCart } from "../../../lib/hooks/useCart";
 import { getImageUrl } from "../../../lib/hooks/getImageUrl";
 
 function StorePage() {
+
+  const [pageNumber, setPageNumber] = useState(1)
+  const pageSize = 9
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search") ?? "";
-  const { data: products } = useProducts(1, 10, search);
+  const { data: products, isLoading } = useProducts(pageNumber, pageSize, search);
+  const totalPages = products?.totalPages ?? 1
+
   const [selectedCategory, setSelectedCategory] = useState("");
-    const { mutate: addItemToCart } = useAddItemToCart()
-    const [ addingId, setAddingId ] = useState<string | null>(null)
+  const { mutate: addItemToCart } = useAddItemToCart()
+  const [addingId, setAddingId] = useState<string | null>(null)
 
   const filteredProducts =
     products?.items.filter((product) => {
       if (!selectedCategory) return true;
 
       return product.categoryId === selectedCategory;
-    }) ?? [];   
+    }) ?? [];
 
   const handleAddToCart = (productId: string) => {
     setAddingId(productId);
@@ -87,6 +92,57 @@ function StorePage() {
           </section>
         </div>
       </main>
+      {/* PAGINATION INFO */}
+      {!isLoading && products?.items.length ? (
+        <div className="text-center text-sm text-gray-500">
+          نمایش{" "}
+          <span className="font-bold text-orange-600">
+            {products?.items.length}
+          </span>{" "}
+          از{" "}
+          <span className="font-bold text-orange-600">
+            {products?.totalCount}
+          </span>{" "}
+          محصول
+        </div>
+      ) : null}
+
+      {/* PAGINATION */}
+      {!isLoading && totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-2 pb-10">
+          {/* Prev */}
+          <button
+            disabled={pageNumber === 1}
+            onClick={() => setPageNumber((p) => p - 1)}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            ← قبلی
+          </button>
+
+          {/* Pages */}
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPageNumber(i + 1)}
+              className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
+                ? "bg-orange-500 text-white shadow-lg"
+                : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
+                }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          {/* Next */}
+          <button
+            disabled={pageNumber === totalPages}
+            onClick={() => setPageNumber((p) => p + 1)}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            بعدی →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
