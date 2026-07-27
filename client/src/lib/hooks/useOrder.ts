@@ -8,6 +8,8 @@ import { cartKeys } from "./useCart";
 export const orderKeys = {
   all: ["orders"] as const,
   lists: () => [...orderKeys.all, "list"] as const,
+  list: (pageNumber: number, pageSize: number) =>
+    [...orderKeys.lists(), pageNumber, pageSize] as const,
   details: () => [...orderKeys.all, "detail"] as const,
   detail: (id: string) => [...orderKeys.details(), id] as const,
 };
@@ -15,10 +17,10 @@ export const orderKeys = {
 /* -----------------------------
    GET MY ORDERS (PAGINATION)
 ------------------------------*/
-export const useMyOrders = () => {
+export const useMyOrders = (pageNumber: number, pageSize: number) => {
   return useQuery({
-    queryKey: orderKeys.lists(),
-    queryFn: () => orderApi.getMyOrders(),
+    queryKey: orderKeys.list(pageNumber, pageSize),
+    queryFn: () => orderApi.getMyOrders(pageNumber, pageSize),
   });
 };
 
