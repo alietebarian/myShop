@@ -26,7 +26,7 @@ public class GetProductsHandler : IRequestHandler<GetProductQuery, PagedResult<G
 
         var products = await query
             .AsNoTracking()
-            .OrderBy(x => x.Name)
+            .OrderByDescending(x => x.CreatedAt)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(p => new GetProductDto

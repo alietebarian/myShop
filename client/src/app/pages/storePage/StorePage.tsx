@@ -48,22 +48,22 @@ function StorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-cream">
       <StoreHeader />
 
       {/* <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"> */}
       <main className="w-full px-8 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">محصولات</h1>
+          <h1 className="font-display text-3xl text-ink">محصولات</h1>
 
-          <p className="mt-1 text-sm text-gray-500">همه محصولات مس کده</p>
+          <p className="mt-1 text-sm text-stone-600">همه محصولات مس‌کده</p>
         </div>
 
         {/* Main Layout */}
         <div className="flex flex-col-reverse gap-6 lg:flex-row">
           {/* Filter Section (1/4) */}
           <aside className="w-full lg:w-1/4">
-            <div className="sticky top-6 rounded-2xl bg-white p-5 shadow-sm">
+            <div className="sticky top-6 rounded-2xl border border-copper-100 bg-white p-5 shadow-sm">
               <FilteredStore
                 selectedCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
@@ -94,13 +94,13 @@ function StorePage() {
       </main>
       {/* PAGINATION INFO */}
       {!isLoading && products?.items.length ? (
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-stone-600">
           نمایش{" "}
-          <span className="font-bold text-orange-600">
+          <span className="font-bold text-copper-600">
             {products?.items.length}
           </span>{" "}
           از{" "}
-          <span className="font-bold text-orange-600">
+          <span className="font-bold text-copper-600">
             {products?.totalCount}
           </span>{" "}
           محصول
@@ -114,7 +114,7 @@ function StorePage() {
           <button
             disabled={pageNumber === 1}
             onClick={() => setPageNumber((p) => p - 1)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl border border-copper-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm transition-all hover:border-copper-400 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ← قبلی
           </button>
@@ -125,8 +125,8 @@ function StorePage() {
               key={i}
               onClick={() => setPageNumber(i + 1)}
               className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
-                ? "bg-orange-500 text-white shadow-lg"
-                : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
+                ? "bg-copper-600 text-cream shadow-lg"
+                : "border border-copper-200 bg-white text-ink-700 hover:border-copper-400 hover:text-copper-600"
                 }`}
             >
               {i + 1}
@@ -137,7 +137,7 @@ function StorePage() {
           <button
             disabled={pageNumber === totalPages}
             onClick={() => setPageNumber((p) => p + 1)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl border border-copper-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm transition-all hover:border-copper-400 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             بعدی →
           </button>

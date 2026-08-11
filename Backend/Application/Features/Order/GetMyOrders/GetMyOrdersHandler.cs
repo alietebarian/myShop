@@ -28,17 +28,18 @@ public class GetMyOrdersHandler : IRequestHandler<GetMyOrdersQuery, PagedResult<
         if (string.IsNullOrWhiteSpace(userId))
             throw new UnauthorizedAccessException();
 
-        IQueryable<Domain.Entities.Order> query = _context.Orders.AsQueryable();
+        IQueryable<Domain.Entities.Order> query = _context.Orders
+    .AsNoTracking()
+    .Where(x => x.userId == userId);
 
         var totalCount = await query.CountAsync();
 
         var orders = await query
-            .OrderBy(x => x.Id)
+            .OrderByDescending(x => x.CreatedAt)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .ProjectTo<OrderDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
-
         return new PagedResult<OrderDto>
         {
             Items = orders,

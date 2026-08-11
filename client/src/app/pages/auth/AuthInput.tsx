@@ -38,7 +38,7 @@ function AuthInput({
           onChange={onChange}
           name={name}
           dir="rtl"
-          className="w-full pr-10 pl-4 py-2.5 bg-gray-50 border border-gray-300 rounded-sm text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B5451A] focus:border-transparent transition-all duration-200 text-right"
+          className="w-full pr-10 pl-4 py-2.5 bg-gray-50 border border-gray-300 rounded-sm text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#9a5322] focus:border-transparent transition-all duration-200 text-right"
         />
       </div>
     </div>

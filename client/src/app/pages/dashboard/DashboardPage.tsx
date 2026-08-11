@@ -3,11 +3,13 @@ import DashboardSidebar from "./DashboardSidebar";
 
 function DashboardPage() {
   return (
-    <div className="flex h-screen bg-slate-100">
+    <div className="flex h-screen bg-cream-100">
       <DashboardSidebar />
 
       <main className="flex-1 overflow-y-auto">
-        <Outlet />
+        <div className="mx-auto max-w-6xl px-6 py-8">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

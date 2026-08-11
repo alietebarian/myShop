@@ -1,7 +1,7 @@
 import DashboardHeader from "../dashboard/DashboardHeader";
 import ProductTitle from "./ProductTitle";
 import { AiOutlineProduct } from "react-icons/ai";
-import { BiSolidPlaneTakeOff } from "react-icons/bi";
+import { PiCoinsLight } from "react-icons/pi";
 import { MdOutlineDetails } from "react-icons/md";
 import ProductTable from "./ProductTable";
 
@@ -58,40 +58,37 @@ function ManageProducts() {
   };
 
   const handleSave = (data: any) => {
-    if(!selectedProduct) return
+    if (!selectedProduct) return;
 
     updateProduct.mutate(
-      {id: selectedProduct.id, data},
+      { id: selectedProduct.id, data },
       {
         onSuccess: () => {
-          toast.success("محصول با موفقیت ویرایش شد")
-          setSelectedProduct(null)
+          toast.success("محصول با موفقیت ویرایش شد");
+          setSelectedProduct(null);
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error))
-        }
-      }
-    )
+          toast.error(getErrorMessage(error));
+        },
+      },
+    );
   };
 
   const handleCreate = (data: CreateProduct) => {
-    // createProduct.mutate(data);
-    // setIsCreateModalOpen(false);
-
     createProduct.mutate(data, {
       onSuccess: () => {
-        toast.success("محصول با موفقیت اضافه شد")
-        setIsCreateModalOpen(false)
+        toast.success("محصول با موفقیت اضافه شد");
+        setIsCreateModalOpen(false);
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error))
-      }
-    })
+        toast.error(getErrorMessage(error));
+      },
+    });
   };
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="space-y-6">
+    <div>
       {/* HEADER */}
       <DashboardHeader
         buttonText="افزودن محصول"
@@ -101,7 +98,7 @@ function ManageProducts() {
       />
 
       {/* STATS */}
-      <div className="grid grid-cols-3 gap-4 p-4">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <ProductTitle
           count={products?.totalCount ?? 0}
           icon={<AiOutlineProduct />}
@@ -112,22 +109,22 @@ function ManageProducts() {
           count={
             products?.items.reduce((a, b) => a + b.price * b.stock, 0) ?? 0
           }
-          icon={<BiSolidPlaneTakeOff />}
-          title="ارزش انبار"
+          icon={<PiCoinsLight />}
+          title="ارزش انبار (تومان)"
         />
 
         <ProductTitle
           count={products?.items.filter((p) => !p.status).length ?? 0}
           icon={<MdOutlineDetails />}
-          title="غیرفعال"
+          title="محصولات غیرفعال"
         />
       </div>
 
       {/* FILTER BAR */}
-      <div className="m-4 flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mb-4 flex flex-col gap-3 rounded-xl border border-copper-100 bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
         {/* SEARCH */}
-        <div className="relative w-full lg:max-w-lg">
-          <IoIosSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-slate-400" />
+        <div className="relative w-full lg:max-w-sm">
+          <IoIosSearch className="absolute right-3.5 top-1/2 -translate-y-1/2 text-lg text-stone-400" />
 
           <input
             value={search}
@@ -136,19 +133,19 @@ function ManageProducts() {
               setPageNumber(1);
             }}
             placeholder="جستجوی محصول..."
-            className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pr-12 pl-4 outline-none transition focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-100"
+            className="w-full rounded-lg border border-copper-100 bg-cream-100 py-2.5 pr-10 pl-4 text-sm outline-none transition focus:border-copper-400 focus:bg-white focus:ring-4 focus:ring-copper-100"
           />
         </div>
 
-        {/* FILTERS (UI only - فعلاً client filter) */}
-        <div className="flex flex-col gap-3 sm:flex-row">
+        {/* FILTERS */}
+        <div className="flex flex-col gap-2.5 sm:flex-row">
           <select
             value={selectedCategory}
             onChange={(e) => {
               setSelectedCategory(e.target.value);
               setPageNumber(1);
             }}
-            className="min-w-52 rounded-xl border border-slate-300 bg-white px-4 py-3"
+            className="min-w-44 rounded-lg border border-copper-100 bg-white px-3.5 py-2.5 text-sm text-ink-700"
           >
             <option value="">همه دسته‌بندی‌ها</option>
 
@@ -165,7 +162,7 @@ function ManageProducts() {
               setSelectedStatus(e.target.value);
               setPageNumber(1);
             }}
-            className="min-w-44 rounded-xl border border-slate-300 bg-white px-4 py-3"
+            className="min-w-36 rounded-lg border border-copper-100 bg-white px-3.5 py-2.5 text-sm text-ink-700"
           >
             <option value="">همه وضعیت‌ها</option>
             <option value="true">فعال</option>
@@ -175,30 +172,31 @@ function ManageProducts() {
       </div>
 
       {/* TABLE */}
-      <div className="m-4 bg-white">
+      {isLoading ? (
+        <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
+          در حال بارگذاری...
+        </div>
+      ) : products?.items.length === 0 ? (
+        <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
+          محصولی یافت نشد
+        </div>
+      ) : (
         <ProductTable
           products={products?.items ?? []}
           onDelete={(id) => deleteProduct.mutate(id)}
           onEdit={handleEdit}
         />
-      </div>
-
-      {/* EMPTY STATE */}
-      {!isLoading && products?.items.length === 0 && (
-        <div className="py-16 text-center text-gray-500">
-          محصولی یافت نشد
-        </div>
       )}
 
       {/* PAGINATION INFO */}
       {!isLoading && products?.items.length ? (
-        <div className="text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-sm text-stone-600">
           نمایش{" "}
-          <span className="font-bold text-orange-600">
+          <span className="font-bold text-copper-600">
             {products?.items.length}
           </span>{" "}
           از{" "}
-          <span className="font-bold text-orange-600">
+          <span className="font-bold text-copper-600">
             {products?.totalCount}
           </span>{" "}
           محصول
@@ -207,12 +205,12 @@ function ManageProducts() {
 
       {/* PAGINATION */}
       {!isLoading && totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2 pb-10">
+        <div className="mt-4 flex items-center justify-center gap-2 pb-10">
           {/* Prev */}
           <button
             disabled={pageNumber === 1}
             onClick={() => setPageNumber((p) => p - 1)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ← قبلی
           </button>
@@ -222,9 +220,9 @@ function ManageProducts() {
             <button
               key={i}
               onClick={() => setPageNumber(i + 1)}
-              className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
-                ? "bg-orange-500 text-white shadow-lg"
-                : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
+              className={`h-9 w-9 rounded-lg text-sm font-semibold transition-colors ${pageNumber === i + 1
+                ? "bg-copper-600 text-cream"
+                : "border border-copper-100 bg-white text-ink-700 hover:border-copper-300 hover:text-copper-600"
                 }`}
             >
               {i + 1}
@@ -235,7 +233,7 @@ function ManageProducts() {
           <button
             disabled={pageNumber === totalPages}
             onClick={() => setPageNumber((p) => p + 1)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             بعدی →
           </button>
@@ -244,7 +242,7 @@ function ManageProducts() {
 
       {/* CREATE MODAL */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4">
           <CreateProductModal
             onClose={() => setIsCreateModalOpen(false)}
             onSave={handleCreate}
@@ -254,7 +252,7 @@ function ManageProducts() {
 
       {/* EDIT MODAL */}
       {selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4">
           <ProductModal
             initialName={selectedProduct.name}
             categoryId={selectedProduct.categoryId}

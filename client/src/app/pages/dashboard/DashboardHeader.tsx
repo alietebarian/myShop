@@ -12,43 +12,25 @@ function DashboardHeader({
   headerName,
   headerCount,
   buttonText,
-  onAdd
+  onAdd,
 }: DashboardHeaderProps) {
   return (
-    <div className="mb-8 flex items-center justify-between bg-white p-4 shadow-sm border border-slate-200">
+    <div className="mb-6 flex items-center justify-between border-b border-copper-100 pb-5">
       {/* Title */}
-      <div className="flex flex-col">
-        <h1 className="text-3xl font-extrabold text-slate-800">{headerName}</h1>
+      <div className="flex items-center gap-3">
+        <h1 className="font-display text-2xl text-ink">{headerName}</h1>
 
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-slate-500">مجموع آیتم‌ها</span>
-
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
-            {headerCount}
-          </span>
-        </div>
+        <span className="rounded-full bg-copper-50 px-2.5 py-1 text-xs font-semibold text-copper-700">
+          {headerCount.toLocaleString()} مورد
+        </span>
       </div>
+
       {/* Button */}
       <button
-        className="
-          flex items-center gap-2
-          rounded-xl
-          bg-amber-600
-          px-5
-          py-3
-          text-white
-          font-semibold
-          shadow-md
-          transition-all
-          duration-200
-          hover:bg-amber-700
-          hover:shadow-lg
-          active:scale-95
-        "
+        className="flex items-center gap-2 rounded-xl bg-copper-600 px-5 py-2.5 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-copper-700"
         onClick={onAdd}
       >
-        <FaPlus className="text-sm" />
-
+        <FaPlus className="text-xs" />
         <span>{buttonText}</span>
       </button>
     </div>

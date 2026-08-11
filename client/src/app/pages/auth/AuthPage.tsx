@@ -91,7 +91,7 @@ function AuthPage() {
               type="button"
               className={`flex-1 p-3 px-8 text-sm font-medium transition-all duration-300 cursor-pointer rounded-r-none ${
                 btn === "login"
-                  ? "bg-[#B5451A] text-white shadow-md border-2 border-[#B5451A]"
+                  ? "bg-[#9a5322] text-white shadow-md border-2 border-[#9a5322]"
                   : "bg-transparent text-gray-600 hover:text-gray-800 border-2 border-gray-300"
               }`}
               onClick={() => setBtn("login")}
@@ -103,7 +103,7 @@ function AuthPage() {
               type="button"
               className={`flex-1 p-3 px-8 text-sm font-medium transition-all duration-300 cursor-pointer rounded-l-none ${
                 btn === "register"
-                  ? "bg-[#B5451A] text-white shadow-md border-2 border-[#B5451A]"
+                  ? "bg-[#9a5322] text-white shadow-md border-2 border-[#9a5322]"
                   : "bg-transparent text-gray-600 hover:text-gray-800 border-2 border-gray-300"
               }`}
               onClick={() => setBtn("register")}
@@ -123,7 +123,7 @@ function AuthPage() {
 
                 <div className="flex justify-end gap-1 pt-3">
                   <span
-                    className="text-[#B5451A] border-b font-semibold cursor-pointer"
+                    className="text-[#9a5322] border-b font-semibold cursor-pointer"
                     onClick={() =>
                       setBtn(btn === "login" ? "register" : "login")
                     }
@@ -164,7 +164,7 @@ function AuthPage() {
 
             <button
               type="submit"
-              className="mt-12 w-full bg-[#B5451A] text-white py-3 cursor-pointer px-4 rounded-md hover:bg-[#9c3a15] focus:outline-none focus:ring-2 focus:ring-[#B5451A]"
+              className="mt-12 w-full bg-[#9a5322] text-white py-3 cursor-pointer px-4 rounded-md hover:bg-[#7c421f] focus:outline-none focus:ring-2 focus:ring-[#9a5322]"
             >
               {btn === "login" ? "ورود به حساب کاربری" : "ثبت نام"}
             </button>

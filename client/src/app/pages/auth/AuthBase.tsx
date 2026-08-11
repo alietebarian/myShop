@@ -17,18 +17,18 @@ function AuthBase() {
       bg-cover
       bg-center
       bg-no-repeat
-      bg-[#f0e2be]
+      bg-[#f4ecdf]
       "
       >
       {/* Header */}
 
       <div>
-        <p className="text-xs tracking-[3px] text-[#B56A2D]">مسکده - از ۱۳۸۳</p>
+        <p className="text-xs tracking-[3px] text-[#b96b2c]">مسکده - از ۱۳۸۳</p>
 
-        <h1 className="mt-6 text-5xl font-black leading-18 text-[#1D1D1D]">
+        <h1 className="mt-6 font-display text-5xl leading-18 text-[#221a15]">
           به خانواده
           <br />
-          <span className="text-[#C86B2A]">مس کده</span>
+          <span className="text-[#b96b2c]">مس کده</span>
           <br />
           بپیوندید
         </h1>

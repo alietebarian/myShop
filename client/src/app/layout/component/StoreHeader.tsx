@@ -3,9 +3,8 @@ import { IoSearch, IoArrowForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 
 function StoreHeader() {
-
-  const [ serach, setSearch ] = useState("")
-  const navigate = useNavigate()
+  const [serach, setSearch] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,41 +15,35 @@ function StoreHeader() {
   }, [serach]);
 
   return (
-    <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100/80 shadow-sm px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 h-16 md:h-20">
+    <div className="sticky top-0 z-50 border-b border-copper-100 bg-cream/90 px-4 backdrop-blur-sm sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 md:h-20">
         {/* Back Button */}
         <Link to="/">
-          <div className="flex items-center gap-2 cursor-pointer group px-2 py-1.5 rounded-xl hover:bg-gray-50/80 transition-all duration-200 active:scale-95">
-            <IoArrowForward className="text-gray-500 text-xl group-hover:text-amber-600 transition-colors" />
-            <span className="text-sm font-medium text-gray-600 group-hover:text-amber-700 transition-colors">
+          <div className="group flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition-all duration-200 hover:bg-cream-200 active:scale-95">
+            <IoArrowForward className="text-xl text-stone-600 transition-colors group-hover:text-copper-600" />
+            <span className="text-sm font-medium text-ink-700 transition-colors group-hover:text-copper-700">
               بازگشت
             </span>
           </div>
         </Link>
 
         {/* Search */}
-        <div className="flex-1 max-w-xl mx-4 relative group">
-          <IoSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors text-xl" />
+        <div className="group relative mx-4 max-w-xl flex-1">
+          <IoSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-stone-400 transition-colors group-focus-within:text-copper-600" />
           <input
             value={serach}
             onChange={(e) => setSearch(e.target.value)}
             type="text"
             placeholder="جستجو در همه محصولات..."
-            className="w-full pr-12 pl-4 py-2.5 rounded-2xl bg-gray-50/80 border-2 border-amber-500
-                     focus:bg-white focus:border-amber-800 focus:ring-4 focus:ring-amber-500/10 
-                     outline-none transition-all duration-300 text-sm text-gray-700 
-                     placeholder:text-gray-400 hover:bg-gray-50"
+            className="w-full rounded-2xl border-2 border-copper-200 bg-white/70 py-2.5 pr-12 pl-4 text-sm text-ink outline-none transition-all duration-300 placeholder:text-stone-400 hover:bg-white focus:border-copper-500 focus:bg-white focus:ring-4 focus:ring-copper-500/10"
           />
         </div>
 
         {/* Logo */}
         <Link to="/">
-          <div className="flex-shrink-0">
-            <span
-              className="text-2xl md:text-3xl font-extrabold text-amber-700 tracking-wide 
-            bg-gradient-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent"
-            >
-              مس کده
+          <div className="shrink-0">
+            <span className="font-display text-2xl tracking-wide text-copper-700 md:text-3xl">
+              مس‌کده
             </span>
           </div>
         </Link>

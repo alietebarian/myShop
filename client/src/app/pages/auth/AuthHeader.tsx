@@ -3,12 +3,12 @@ import { GoArrowLeft } from "react-icons/go";
 
 function AuthHeader() {
   return (
-    <header className="w-full border-b border-gray-200 bg-white shadow-sm">
+    <header className="w-full border-b border-copper-100 bg-cream shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         {/* RIGHT */}
         <Link
           to="/"
-          className="flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-amber-600"
+          className="flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-copper-600"
         >
           <GoArrowLeft className="text-lg" />
           <span>بازگشت به فروشگاه</span>
@@ -17,7 +17,7 @@ function AuthHeader() {
         {/* LEFT */}
         <Link
           to="/"
-          className="text-xl font-bold text-amber-600 transition-colors hover:text-amber-700"
+          className="text-xl font-bold text-copper-600 transition-colors hover:text-copper-700"
         >
           مس کده
         </Link>

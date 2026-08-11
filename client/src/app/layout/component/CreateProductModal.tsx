@@ -28,9 +28,9 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
   const [description, setDescription] = useState("");
 
   const inputClass =
-    "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 outline-none transition focus:border-amber-500 focus:ring-4 focus:ring-amber-100";
+    "w-full rounded-xl border border-copper-100 bg-white px-4 py-3 text-ink outline-none transition focus:border-copper-400 focus:ring-4 focus:ring-copper-100";
 
-  const labelClass = "mb-2 block text-sm font-semibold text-slate-700";
+  const labelClass = "mb-2 block text-sm font-semibold text-ink";
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,14 +58,14 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
   };
 
   return (
-    <div className="flex h-[80%] max-h-150 w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+    <div className="flex h-[80%] max-h-150 w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-copper-100 bg-white shadow-2xl">
       {/* Header - ثابت */}
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-4">
-        <h3 className="text-lg font-bold text-slate-800">افزودن محصول جدید</h3>
+      <div className="flex shrink-0 items-center justify-between border-b border-copper-100 bg-cream-100 px-6 py-4">
+        <h3 className="text-lg font-bold text-ink">افزودن محصول جدید</h3>
 
         <button
           onClick={onClose}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-200 hover:text-red-500"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition hover:bg-cream-200 hover:text-red-500"
         >
           <IoIosClose className="text-3xl" />
         </button>
@@ -148,14 +148,14 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className={`${inputClass} cursor-pointer file:ml-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-white file:hover:bg-amber-700`}
+              className={`${inputClass} cursor-pointer file:ml-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-copper-600 file:px-4 file:py-2 file:text-white file:hover:bg-copper-700`}
             />
 
             {previewUrl && (
               <img
                 src={previewUrl}
                 alt="پیش‌نمایش"
-                className="mt-3 h-32 w-32 rounded-lg object-cover border border-slate-200"
+                className="mt-3 h-32 w-32 rounded-lg object-cover border border-copper-100"
               />
             )}
           </div>
@@ -175,17 +175,17 @@ function CreateProductModal({ onClose, onSave }: CreateProductModalProps) {
       </div>
 
       {/* Footer - ثابت */}
-      <div className="flex shrink-0 justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+      <div className="flex shrink-0 justify-end gap-3 border-t border-copper-100 bg-cream-100 px-6 py-4">
         <button
           onClick={onClose}
-          className="rounded-xl border border-slate-300 px-6 py-2.5 font-medium text-slate-600 transition hover:bg-slate-100"
+          className="rounded-xl border border-copper-100 px-6 py-2.5 font-medium text-ink-700 transition hover:bg-cream-100"
         >
           انصراف
         </button>
 
         <button
           onClick={handleSave}
-          className="rounded-xl bg-amber-600 px-6 py-2.5 font-semibold text-white shadow-md transition hover:bg-amber-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="rounded-xl bg-copper-600 px-6 py-2.5 font-semibold text-white shadow-md transition hover:bg-copper-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-copper-100"
           disabled={
             !name.trim() ||
             !categoryName ||

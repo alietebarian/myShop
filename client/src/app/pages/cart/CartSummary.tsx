@@ -69,7 +69,7 @@ function CartSummary({
                 <div className="flex justify-between">
                     <span>جمع کل</span>
 
-                    <span className="font-bold text-amber-700">
+                    <span className="font-bold text-copper-700">
                         {totalPrice.toLocaleString()} تومان
                     </span>
                 </div>
@@ -79,7 +79,7 @@ function CartSummary({
                 <div className="flex justify-between text-lg">
                     <span>قابل پرداخت</span>
 
-                    <span className="font-black text-amber-700">
+                    <span className="font-black text-copper-700">
                         {totalPrice.toLocaleString()} تومان
                     </span>
                 </div>
@@ -91,12 +91,12 @@ function CartSummary({
             mt-5
             w-full
             rounded-xl
-            bg-amber-600
+            bg-copper-600
             py-4
             font-bold
             text-white
             transition
-            hover:bg-amber-700
+            hover:bg-copper-700
             disabled:opacity-50
           "
                 >

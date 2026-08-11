@@ -10,7 +10,10 @@ export default function FeaturedProducts() {
   const { mutate: addItemToCart } = useAddItemToCart()
   const [ addingId, setAddingId ] = useState<string | null>(null)
 
-  if (isLoading) return <div className="text-center py-20">Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="py-20 text-center text-stone-600">در حال بارگذاری...</div>
+    );
 
   const products = data?.items ?? [];
 
@@ -34,9 +37,19 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8">محصولات محبوب</h2>
+    <section className="bg-cream-100 py-20">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="mb-10">
+          <span className="text-xs font-bold tracking-widest text-copper-600">
+            پرفروش‌ترین‌ها
+          </span>
+          <div className="mt-2 flex items-center gap-3">
+            <h2 className="font-display text-3xl text-ink">
+              محصولات محبوب مس‌کده
+            </h2>
+            <span className="h-[3px] max-w-24 flex-1 rounded-full bg-patina-500/70" />
+          </div>
+        </div>
 
         <div
           className="

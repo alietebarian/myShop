@@ -3,6 +3,7 @@ import CategoryCart from "../../layout/component/CategoryCart";
 import CategoryModal from "../../layout/component/CategoryModal";
 import { useState } from "react";
 import { toast } from "sonner";
+import { IoIosSearch } from "react-icons/io";
 import {
   useCreateCategory,
   useUpdateCategory,
@@ -23,7 +24,7 @@ function ManageCategories() {
   const [pageNumber, setPageNumber] = useState(1);
   const [search, setSearch] = useState("");
 
-  const pageSize = 7;
+  const pageSize = 9;
 
   const { data, isLoading } = useCategories(pageNumber, pageSize, search);
   const createCategory = useCreateCategory();
@@ -64,7 +65,7 @@ function ManageCategories() {
     <>
       {/* MODAL */}
       {openModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm">
           <CategoryModal
             title={mode === "create" ? "افزودن" : "ویرایش"}
             initialName={selectedCategory?.name ?? ""}
@@ -105,7 +106,7 @@ function ManageCategories() {
         </div>
       )}
 
-      <div className="space-y-8">
+      <div>
         {/* HEADER */}
         <DashboardHeader
           onAdd={addCategory}
@@ -115,7 +116,8 @@ function ManageCategories() {
         />
 
         {/* SEARCH */}
-        <div className="px-6">
+        <div className="relative mb-6 max-w-sm">
+          <IoIosSearch className="absolute right-3.5 top-1/2 -translate-y-1/2 text-lg text-stone-400" />
           <input
             type="text"
             placeholder="جستجوی دسته‌بندی..."
@@ -124,20 +126,21 @@ function ManageCategories() {
               setSearch(e.target.value);
               setPageNumber(1);
             }}
-            className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm outline-none transition-all duration-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+            className="w-full rounded-lg border border-copper-100 bg-cream-100 py-2.5 pr-10 pl-4 text-sm outline-none transition focus:border-copper-400 focus:bg-white focus:ring-4 focus:ring-copper-100"
           />
         </div>
 
-        {/* LOADING */}
-        {isLoading && (
-          <div className="py-20 text-center text-gray-500">
+        {/* LOADING / EMPTY / GRID */}
+        {isLoading ? (
+          <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
             در حال بارگذاری...
           </div>
-        )}
-
-        {/* GRID */}
-        {!isLoading && (
-          <div className="grid grid-cols-1 gap-6 px-6 md:grid-cols-2 xl:grid-cols-3">
+        ) : data?.items.length === 0 ? (
+          <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
+            دسته‌بندی‌ای یافت نشد
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {data?.items.map((category) => (
               <CategoryCart
                 key={category.id}
@@ -151,22 +154,15 @@ function ManageCategories() {
           </div>
         )}
 
-        {/* EMPTY STATE */}
-        {!isLoading && data?.items.length === 0 && (
-          <div className="py-16 text-center text-gray-500">
-            دسته‌بندی‌ای یافت نشد
-          </div>
-        )}
-
         {/* PAGINATION INFO */}
         {!isLoading && data?.items.length ? (
-          <div className="text-center text-sm text-gray-500">
+          <div className="mt-4 text-center text-sm text-stone-600">
             نمایش{" "}
-            <span className="font-bold text-orange-600">
+            <span className="font-bold text-copper-600">
               {data?.items.length}
             </span>{" "}
             از{" "}
-            <span className="font-bold text-orange-600">
+            <span className="font-bold text-copper-600">
               {data?.totalCount}
             </span>{" "}
             دسته‌بندی
@@ -175,12 +171,12 @@ function ManageCategories() {
 
         {/* PAGINATION */}
         {!isLoading && totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-center gap-2 pb-10">
+          <div className="mt-4 flex items-center justify-center gap-2 pb-10">
             {/* Prev */}
             <button
               disabled={pageNumber === 1}
               onClick={() => setPageNumber((p) => p - 1)}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← قبلی
             </button>
@@ -190,9 +186,9 @@ function ManageCategories() {
               <button
                 key={i}
                 onClick={() => setPageNumber(i + 1)}
-                className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
-                    ? "bg-orange-500 text-white shadow-lg"
-                    : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
+                className={`h-9 w-9 rounded-lg text-sm font-semibold transition-colors ${pageNumber === i + 1
+                    ? "bg-copper-600 text-cream"
+                    : "border border-copper-100 bg-white text-ink-700 hover:border-copper-300 hover:text-copper-600"
                   }`}
               >
                 {i + 1}
@@ -203,7 +199,7 @@ function ManageCategories() {
             <button
               disabled={pageNumber === totalPages}
               onClick={() => setPageNumber((p) => p + 1)}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
             >
               بعدی →
             </button>

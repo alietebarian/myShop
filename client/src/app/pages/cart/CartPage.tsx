@@ -12,25 +12,25 @@ function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-cream-100">
         <ProductHeader />
 
         <div className="mx-auto max-w-7xl px-6 py-10">
           <div className="animate-pulse space-y-5">
 
-            <div className="h-8 w-52 rounded bg-gray-300" />
+            <div className="h-8 w-52 rounded bg-copper-100" />
 
             <div className="grid gap-6 lg:grid-cols-3">
 
               <div className="space-y-5 lg:col-span-2">
 
-                <div className="h-40 rounded-3xl bg-gray-300" />
-                <div className="h-40 rounded-3xl bg-gray-300" />
-                <div className="h-40 rounded-3xl bg-gray-300" />
+                <div className="h-40 rounded-3xl bg-copper-100" />
+                <div className="h-40 rounded-3xl bg-copper-100" />
+                <div className="h-40 rounded-3xl bg-copper-100" />
 
               </div>
 
-              <div className="h-96 rounded-3xl bg-gray-300" />
+              <div className="h-96 rounded-3xl bg-copper-100" />
 
             </div>
           </div>
@@ -41,7 +41,7 @@ function CartPage() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-cream-100">
         <ProductHeader />
 
         <div className="flex h-[70vh] items-center justify-center">
@@ -55,7 +55,7 @@ function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-cream-100">
         <ProductHeader />
 
         <div className="flex h-[70vh] flex-col items-center justify-center gap-6">
@@ -68,7 +68,7 @@ function CartPage() {
             سبد خرید شما خالی است
           </h2>
 
-          <p className="text-gray-500">
+          <p className="text-stone-600">
             هنوز محصولی به سبد خرید اضافه نکرده‌اید.
           </p>
 
@@ -78,7 +78,7 @@ function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-cream-100">
       <ProductHeader />
 
       <main className="mx-auto max-w-7xl px-6 py-10">

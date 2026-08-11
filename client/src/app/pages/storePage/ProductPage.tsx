@@ -41,11 +41,11 @@ function ProductPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-cream">
         <ProductHeader />
 
         <div className="flex h-96 items-center justify-center">
-          <p className="text-gray-500">در حال بارگذاری محصول...</p>
+          <p className="text-stone-600">در حال بارگذاری محصول...</p>
         </div>
       </div>
     );
@@ -53,11 +53,11 @@ function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-cream">
         <ProductHeader />
 
         <div className="flex h-96 items-center justify-center">
-          <p className="text-gray-500">محصول پیدا نشد</p>
+          <p className="text-stone-600">محصول پیدا نشد</p>
         </div>
       </div>
     );
@@ -72,12 +72,12 @@ function ProductPage() {
       )
       .slice(0, 4) ?? [];
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-cream">
       <ProductHeader />
 
       <main className="mx-auto w-full max-w-7xl px-6 py-10">
         {/* Breadcrumb */}
-        <div className="mb-6 text-sm text-gray-500">
+        <div className="mb-6 text-sm text-stone-600">
           خانه / {product.categoryName} / {product.name}
         </div>
 
@@ -88,6 +88,8 @@ function ProductPage() {
           grid-cols-1
           gap-10
           rounded-3xl
+          border
+          border-copper-100
           bg-white
           p-6
           shadow-sm
@@ -103,8 +105,8 @@ function ProductPage() {
             justify-center
             rounded-3xl
             bg-gradient-to-br
-            from-gray-50
-            to-gray-100
+            from-cream-100
+            to-copper-50
             p-8
           "
           >
@@ -130,12 +132,12 @@ function ProductPage() {
                 className="
                 inline-flex
                 rounded-full
-                bg-amber-100
+                bg-copper-100
                 px-4
                 py-2
                 text-sm
                 font-semibold
-                text-amber-700
+                text-copper-700
               "
               >
                 {product.categoryName}
@@ -145,11 +147,11 @@ function ProductPage() {
             {/* Title */}
             <h1
               className="
-              text-3xl
-              font-black
+              font-display
+              text-4xl
               leading-relaxed
-              text-gray-800
-              md:text-4xl
+              text-ink
+              md:text-5xl
             "
             >
               {product.name}
@@ -159,24 +161,26 @@ function ProductPage() {
             <div
               className="
               rounded-2xl
-              bg-amber-50
+              border
+              border-copper-100
+              bg-copper-50
               p-5
             "
             >
-              <p className="mb-2 text-sm text-gray-500">قیمت محصول</p>
+              <p className="mb-2 text-sm text-stone-600">قیمت محصول</p>
 
               <div className="flex items-center justify-end gap-2">
                 <span
                   className="
                   text-4xl
                   font-black
-                  text-amber-700
+                  text-copper-700
                 "
                 >
                   {product.price.toLocaleString()}
                 </span>
 
-                <span className="text-gray-600">تومان</span>
+                <span className="text-stone-600">تومان</span>
               </div>
             </div>
 
@@ -219,8 +223,8 @@ function ProductPage() {
               className="
               rounded-2xl
               border
-              border-gray-100
-              bg-gray-50
+              border-copper-100
+              bg-cream-100
               p-6
             "
             >
@@ -229,7 +233,7 @@ function ProductPage() {
                 mb-3
                 text-lg
                 font-bold
-                text-gray-800
+                text-ink
               "
               >
                 توضیحات محصول
@@ -238,7 +242,7 @@ function ProductPage() {
               <p
                 className="
                 leading-9
-                text-gray-600
+                text-stone-600
               "
               >
                 {product.description ||
@@ -257,19 +261,19 @@ function ProductPage() {
               gap-3
               rounded-2xl
               bg-gradient-to-r
-              from-amber-600
-              to-amber-500
+              from-copper-600
+              to-copper-500
               py-4
               text-lg
               font-bold
-              text-white
+              text-cream
               shadow-lg
-              shadow-amber-200
+              shadow-copper-900/20
               transition-all
               hover:-translate-y-1
               hover:shadow-xl
               active:scale-95
-              disabled:bg-gray-300
+              disabled:bg-copper-200
             "
             >
               <IoCartOutline className="text-3xl" />
@@ -285,9 +289,9 @@ function ProductPage() {
           <div className="mb-7 flex items-center justify-between">
             <h2
               className="
+              font-display
               text-2xl
-              font-black
-              text-gray-800
+              text-ink
             "
             >
               محصولات مشابه
@@ -295,10 +299,10 @@ function ProductPage() {
 
             <div
               className="
-              h-1
+              h-[3px]
               w-20
               rounded-full
-              bg-amber-600
+              bg-patina-500
             "
             />
           </div>

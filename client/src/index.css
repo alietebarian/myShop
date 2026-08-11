@@ -1,9 +1,77 @@
 @import "tailwindcss";
 
+@theme {
+  /* -- Copper: the brand's core metal, not Tailwind's stock amber -- */
+  --color-copper-50: #fdf6ef;
+  --color-copper-100: #f8e8d6;
+  --color-copper-200: #efceac;
+  --color-copper-300: #e2ab77;
+  --color-copper-400: #d1873f;
+  --color-copper-500: #b96b2c;
+  --color-copper-600: #9a5322;
+  --color-copper-700: #7c421f;
+  --color-copper-800: #5e321c;
+  --color-copper-900: #3f2316;
+
+  /* -- Patina: the signature accent -- the green a copper surface */
+  /* takes on with age and honest use. Used sparingly. -- */
+  --color-patina-400: #86a893;
+  --color-patina-500: #5f8672;
+  --color-patina-600: #476859;
+
+  /* -- Warm neutrals: ink instead of gray-900, cream instead of white -- */
+  --color-ink: #221a15;
+  --color-ink-700: #392c24;
+  --color-stone-600: #6f6055;
+  --color-stone-400: #a3937f;
+  --color-cream: #fbf6ef;
+  --color-cream-100: #f4ecdf;
+  --color-cream-200: #ece0cc;
+
+  --font-display: "Lalezar", "Vazirmatn", sans-serif;
+  --font-sans: "Vazirmatn", "Tahoma", sans-serif;
+}
+
 html,
 body,
 #root {
   min-height: 100%;
-  background-color: #fff;
+  background-color: var(--color-cream);
   direction: rtl;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+
+/* Signature texture: a faint hammered-copper dot pattern.
+   Used on the hero and as section dividers -- references the
+   چکش‌کاری (hand-hammering) technique that makes the product handmade. */
+.hammered-texture {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(34, 26, 21, 0.09) 1px,
+      transparent 0
+    );
+  background-size: 18px 18px;
+}
+
+.hammered-texture-light {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(251, 246, 239, 0.15) 1px,
+      transparent 0
+    );
+  background-size: 18px 18px;
+}
+
+::selection {
+  background-color: var(--color-copper-200);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-copper-500);
+  outline-offset: 2px;
 }

@@ -25,6 +25,7 @@ public class GetCartHandler : IRequestHandler<GetCartQuery, CartDto>
 
         var cart = await _context.Carts
             .AsNoTracking()
+            .OrderByDescending(x => x.Id)
             .Include(x => x.Items)
             .ThenInclude(xx => xx.Product)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);

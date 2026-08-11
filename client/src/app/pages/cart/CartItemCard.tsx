@@ -97,7 +97,7 @@ function CartItemCard({
             w-32
             rounded-2xl
             object-cover
-            bg-gray-100
+            bg-cream-100
             p-2
           "
                 />
@@ -107,11 +107,11 @@ function CartItemCard({
             <div className="flex flex-1 flex-col justify-between">
 
                 <div className="text-right">
-                    <h3 className="text-lg font-bold text-gray-800">
+                    <h3 className="text-lg font-bold text-ink">
                         {name}
                     </h3>
 
-                    <p className="mt-2 text-gray-500">
+                    <p className="mt-2 text-stone-600">
                         {price.toLocaleString()} تومان
                     </p>
                 </div>
@@ -144,7 +144,7 @@ function CartItemCard({
               gap-4
               rounded-full
               border
-              border-gray-200
+              border-copper-200
               px-4
               py-2
             "
@@ -180,7 +180,7 @@ function CartItemCard({
           justify-end
           text-xl
           font-black
-          text-amber-700
+          text-copper-700
         "
             >
                 {(price * quantity).toLocaleString()} تومان

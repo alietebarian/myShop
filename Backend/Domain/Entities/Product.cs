@@ -12,6 +12,7 @@ public class Product
     public int Stock { get; set; }
     public bool Status { get; set; } = true;
     public string Description { get; set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<CartItem> CartItems { get; set; }
         = new List<CartItem>();
