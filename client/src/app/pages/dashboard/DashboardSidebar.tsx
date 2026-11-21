@@ -1,131 +1,107 @@
-import { useState } from "react";
-import { HiOutlineMenuAlt2, HiOutlineChevronDoubleLeft } from "react-icons/hi";
-import { MdManageAccounts } from "react-icons/md";
-import { IoFolderOpen } from "react-icons/io5";
-import { IoIosExit } from "react-icons/io";
-import { FaBoxOpen } from "react-icons/fa6";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { FiBox, FiFolder, FiUsers, FiExternalLink, FiLogOut, FiChevronsRight, FiChevronsLeft } from "react-icons/fi";
+import { useAuth } from "../../../features/context/useAuth";
+import { CopperMark } from "../../components/ui/Logo";
 
-function DashboardSidebar() {
-  const [closeSidebar, setCloseSidebar] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+interface Props {
+  collapsed: boolean;
+  onToggle?: () => void;
+  onNavigate?: () => void;
+}
 
-  const menuClass = (isActive: boolean) =>
-    `group flex items-center ${
-      closeSidebar ? "justify-center" : ""
-    } gap-3.5 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 ${
-      isActive
-        ? "bg-copper-600 text-cream"
-        : "text-stone-400 hover:bg-ink-700 hover:text-cream"
-    }`;
+const nav = [
+  { to: "/dashboard/manageProducts", label: "محصولات", icon: FiBox },
+  { to: "/dashboard/manageCategories", label: "دسته‌بندی‌ها", icon: FiFolder },
+];
 
-  const initial = (user.fullName?.[0] ?? "A").toUpperCase();
+function DashboardSidebar({ collapsed, onToggle, onNavigate }: Props) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const initial = user?.fullName?.trim()?.[0] ?? "A";
+
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+      collapsed ? "justify-center" : ""
+    } ${isActive ? "bg-copper-600 text-white" : "text-stone-400 hover:bg-ink-700 hover:text-cream"}`;
 
   return (
-    <aside
-      className={`flex h-screen shrink-0 flex-col justify-between border-l border-ink-700 bg-ink text-cream transition-[width] duration-200 ${
-        closeSidebar ? "w-20" : "w-64"
-      }`}
-    >
-      <div>
-        {/* Brand */}
-        <div className="flex items-center justify-between border-b border-ink-700 px-5 py-5">
-          {!closeSidebar && (
-            <div className="flex flex-col">
-              <span className="font-display text-xl tracking-wide text-copper-300">
-                مس‌کده
-              </span>
-              <span className="mt-0.5 text-[11px] text-stone-400">
-                پنل مدیریت
-              </span>
-            </div>
-          )}
-
-          <button
-            onClick={() => setCloseSidebar(!closeSidebar)}
-            aria-label={closeSidebar ? "باز کردن منو" : "جمع کردن منو"}
-            className="rounded-lg p-2 text-stone-400 transition-colors hover:bg-ink-700 hover:text-cream"
-          >
-            {closeSidebar ? (
-              <HiOutlineMenuAlt2 className="text-xl" />
-            ) : (
-              <HiOutlineChevronDoubleLeft className="text-xl" />
-            )}
-          </button>
-        </div>
-
-        {/* User Card */}
-        <div className="p-4">
-          <div
-            className={`flex items-center gap-3 rounded-xl border border-ink-700 bg-ink-700/60 p-3 ${
-              closeSidebar ? "justify-center" : ""
-            }`}
-          >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-copper-600 text-sm font-bold text-cream">
-              {initial}
-            </div>
-
-            {!closeSidebar && (
-              <div className="flex min-w-0 flex-col">
-                <span className="truncate text-sm font-semibold text-cream">
-                  {user.fullName}
-                </span>
-                <span className="truncate text-xs text-stone-400">
-                  {user.email}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Menu */}
-        <nav className="flex flex-col gap-1 px-3">
-          {!closeSidebar && (
-            <span className="px-3.5 pb-2 text-[11px] font-semibold tracking-wide text-stone-400">
-              مدیریت فروشگاه
+    <div className="flex h-full flex-col bg-ink text-cream">
+      <div className={`flex h-16 items-center border-b border-ink-700 px-4 ${collapsed ? "justify-center" : "justify-between"}`}>
+        <Link to="/" className="flex items-center gap-2.5" title="مشاهده فروشگاه">
+          <CopperMark className="h-8 w-8" />
+          {!collapsed && (
+            <span className="flex flex-col leading-tight">
+              <span className="font-display text-lg text-copper-300">مس‌کده</span>
+              <span className="text-[10px] text-stone-400">پنل مدیریت</span>
             </span>
           )}
-
-          <NavLink
-            to="/dashboard/manageProducts"
-            className={({ isActive }) => menuClass(isActive)}
-          >
-            <FaBoxOpen className="shrink-0 text-lg" />
-            {!closeSidebar && <span>مدیریت محصولات</span>}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/manageCategories"
-            className={({ isActive }) => menuClass(isActive)}
-          >
-            <IoFolderOpen className="shrink-0 text-lg" />
-            {!closeSidebar && <span>مدیریت دسته‌بندی</span>}
-          </NavLink>
-
-          <NavLink
-            to="/dashboard/manageUsers"
-            className={({ isActive }) => menuClass(isActive)}
-          >
-            <MdManageAccounts className="shrink-0 text-lg" />
-            {!closeSidebar && <span>مدیریت کاربران</span>}
-          </NavLink>
-        </nav>
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-ink-700 p-3">
-        <Link to="/">
-          <button
-            className={`flex w-full items-center ${
-              closeSidebar ? "justify-center" : ""
-            } gap-3.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-400 transition-colors hover:bg-red-500/10 hover:text-red-400`}
-          >
-            <IoIosExit className="shrink-0 text-lg" />
-            {!closeSidebar && <span>خروج از پنل</span>}
-          </button>
         </Link>
+        {onToggle && !collapsed && (
+          <button type="button" onClick={onToggle} className="rounded-lg p-1.5 text-stone-400 hover:bg-ink-700 hover:text-cream" aria-label="جمع کردن منو" title="جمع کردن منو">
+            <FiChevronsRight />
+          </button>
+        )}
       </div>
-    </aside>
+
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3" aria-label="منوی مدیریت">
+        {!collapsed && <span className="px-3 pt-1 pb-2 text-[11px] font-semibold text-stone-500">مدیریت فروشگاه</span>}
+        {nav.map(({ to, label, icon: Icon }) => (
+          <NavLink key={to} to={to} className={linkClass} onClick={onNavigate} title={collapsed ? label : undefined}>
+            <Icon className="shrink-0 text-lg" />
+            {!collapsed && label}
+          </NavLink>
+        ))}
+        <span
+          className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-stone-600 ${collapsed ? "justify-center" : ""}`}
+          title="مدیریت کاربران — به‌زودی"
+          aria-disabled
+        >
+          <FiUsers className="shrink-0 text-lg" />
+          {!collapsed && (
+            <>
+              کاربران
+              <span className="mr-auto rounded-md bg-ink-700 px-1.5 py-0.5 text-[10px] text-stone-400">به‌زودی</span>
+            </>
+          )}
+        </span>
+      </nav>
+
+      <div className="space-y-1 border-t border-ink-700 p-3">
+        {onToggle && collapsed && (
+          <button type="button" onClick={onToggle} className="flex w-full justify-center rounded-xl py-2.5 text-stone-400 hover:bg-ink-700 hover:text-cream" aria-label="باز کردن منو" title="باز کردن منو">
+            <FiChevronsLeft className="text-lg" />
+          </button>
+        )}
+        <Link to="/" className={linkClass({ isActive: false })} title={collapsed ? "مشاهده فروشگاه" : undefined}>
+          <FiExternalLink className="shrink-0 text-lg" />
+          {!collapsed && "مشاهده فروشگاه"}
+        </Link>
+
+        <div className={`mt-2 flex items-center gap-3 rounded-xl bg-ink-700/60 p-2.5 ${collapsed ? "justify-center" : ""}`}>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-copper-600 text-sm font-bold">{initial}</span>
+          {!collapsed && (
+            <>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold">{user?.fullName}</span>
+                <span className="block truncate text-[11px] text-stone-400" dir="ltr">{user?.email}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+                className="rounded-lg p-2 text-stone-400 transition-colors hover:bg-red-500/15 hover:text-red-400"
+                aria-label="خروج از حساب"
+                title="خروج از حساب"
+              >
+                <FiLogOut />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

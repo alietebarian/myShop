@@ -1,23 +1,28 @@
-import React from "react";
+import type { ReactNode } from "react";
+import { formatNumber } from "../../../lib/utils/format";
 
 interface ProductTitleProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   count: number;
+  caption?: string;
+  tone?: "copper" | "red" | "stone";
 }
 
-function ProductTitle({ icon, title, count }: ProductTitleProps) {
-  return (
-    <div className="flex items-center gap-4 rounded-xl border border-copper-100 bg-white p-5">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-copper-50 text-xl text-copper-700">
-        {icon}
-      </div>
+const tones = {
+  copper: "bg-copper-50 text-copper-600",
+  red: "bg-red-50 text-red-600",
+  stone: "bg-cream-100 text-stone-600",
+};
 
-      <div className="flex flex-col">
-        <span className="text-xs font-medium text-stone-600">{title}</span>
-        <span className="text-xl font-bold text-ink">
-          {count.toLocaleString()}
-        </span>
+function ProductTitle({ icon, title, count, caption, tone = "copper" }: ProductTitleProps) {
+  return (
+    <div className="card flex items-center gap-4 p-4">
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl ${tones[tone]}`}>{icon}</span>
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-stone-500">{title}</p>
+        <p className="mt-0.5 text-xl font-extrabold text-ink tabular-nums">{formatNumber(count)}</p>
+        {caption && <p className="text-[11px] text-stone-400">{caption}</p>}
       </div>
     </div>
   );

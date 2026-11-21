@@ -1,136 +1,66 @@
-import { FiTrash2 } from "react-icons/fi";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { useClearCart } from "../../../lib/hooks/useCart";
+import { LuShieldCheck } from "react-icons/lu";
 import { useCheckout } from "../../../lib/hooks/useOrder";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
+import { formatNumber } from "../../../lib/utils/format";
+import Spinner from "../../components/ui/Spinner";
 
 interface Props {
-    totalItems: number;
-    totalPrice: number;
+  totalItems: number;
+  totalPrice: number;
 }
 
-function CartSummary({
-    totalItems,
-    totalPrice,
-}: Props) {
-    const navigate = useNavigate();
+function CartSummary({ totalItems, totalPrice }: Props) {
+  const navigate = useNavigate();
+  const { mutate: checkout, isPending } = useCheckout();
 
-    const { mutate: clearCart, isPending: isClearing } = useClearCart();
-    const { mutate: checkout, isPending: isCheckingOut } = useCheckout();
+  const handleCheckout = () =>
+    checkout(undefined, {
+      onSuccess: (orderId) => {
+        toast.success("سفارش شما با موفقیت ثبت شد");
+        navigate(`/orders/${orderId}`);
+      },
+      onError: (e) => toast.error(getErrorMessage(e)),
+    });
 
-    const handleClear = () => {
-        clearCart(undefined, {
-            onSuccess: () => {
-                toast.success("سبد خرید پاک شد");
-            },
-            onError: () => {
-                toast.error("خطا در حذف سبد خرید");
-            },
-        });
-    };
+  return (
+    <div className="card p-5 sm:p-6 lg:sticky lg:top-36">
+      <h2 className="text-base font-bold text-ink">خلاصه سفارش</h2>
 
-    const handleCheckout = () => {
-        checkout(undefined, {
-            onSuccess: (orderId) => {
-                toast.success("سفارش شما با موفقیت ثبت شد");
-                navigate(`/orders/${orderId}`);
-            },
-            onError: () => {
-                toast.error("خطا در ثبت سفارش");
-            },
-        });
-    };
-
-    return (
-        <div
-            className="
-        sticky
-        top-8
-        rounded-3xl
-        bg-white
-        p-6
-        shadow-sm
-      "
-        >
-            <h2 className="mb-8 text-xl font-bold">
-                خلاصه سفارش
-            </h2>
-
-            <div className="space-y-5">
-
-                <div className="flex justify-between">
-                    <span>تعداد کالا</span>
-
-                    <span className="font-bold">
-                        {totalItems}
-                    </span>
-                </div>
-
-                <div className="flex justify-between">
-                    <span>جمع کل</span>
-
-                    <span className="font-bold text-copper-700">
-                        {totalPrice.toLocaleString()} تومان
-                    </span>
-                </div>
-
-                <hr />
-
-                <div className="flex justify-between text-lg">
-                    <span>قابل پرداخت</span>
-
-                    <span className="font-black text-copper-700">
-                        {totalPrice.toLocaleString()} تومان
-                    </span>
-                </div>
-
-                <button
-                    onClick={handleCheckout}
-                    disabled={isCheckingOut || isClearing}
-                    className="
-            mt-5
-            w-full
-            rounded-xl
-            bg-copper-600
-            py-4
-            font-bold
-            text-white
-            transition
-            hover:bg-copper-700
-            disabled:opacity-50
-          "
-                >
-                    {isCheckingOut ? "در حال ثبت سفارش..." : "ثبت سفارش"}
-                </button>
-
-                <button
-                    onClick={handleClear}
-                    disabled={isCheckingOut}
-                    className="
-            mt-3
-            flex
-            w-full
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-red-300
-            py-3
-            text-red-600
-            transition
-            hover:bg-red-50
-            disabled:opacity-50
-          "
-                >
-                    <FiTrash2 />
-
-                    پاک کردن سبد خرید
-                </button>
-
-            </div>
+      <dl className="mt-5 space-y-3.5 text-sm">
+        <div className="flex justify-between">
+          <dt className="text-stone-600">تعداد کالاها</dt>
+          <dd className="font-semibold text-ink">{formatNumber(totalItems)} عدد</dd>
         </div>
-    );
+        <div className="flex justify-between">
+          <dt className="text-stone-600">جمع سبد</dt>
+          <dd className="font-semibold text-ink">{formatNumber(totalPrice)} تومان</dd>
+        </div>
+        <div className="flex items-baseline justify-between border-t border-dashed border-line pt-4">
+          <dt className="font-bold text-ink">مبلغ قابل پرداخت</dt>
+          <dd className="flex items-baseline gap-1">
+            <span className="text-xl font-black text-copper-700">{formatNumber(totalPrice)}</span>
+            <span className="text-xs text-stone-500">تومان</span>
+          </dd>
+        </div>
+      </dl>
+
+      <button type="button" onClick={handleCheckout} disabled={isPending} className="btn btn-primary btn-lg mt-6 w-full">
+        {isPending && <Spinner />}
+        {isPending ? "در حال ثبت سفارش…" : "ثبت سفارش"}
+      </button>
+
+      <Link to="/products" className="btn btn-ghost mt-2 w-full">
+        ادامه خرید
+      </Link>
+
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-stone-500">
+        <LuShieldCheck className="text-base text-patina-600" />
+        خرید امن با ضمانت اصالت کالا
+      </p>
+    </div>
+  );
 }
 
 export default CartSummary;

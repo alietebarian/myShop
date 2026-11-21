@@ -1,336 +1,207 @@
-import { useParams } from "react-router-dom";
-import ProductHeader from "../../layout/component/ProductHeader";
-import { useProductById, useProducts } from "../../../lib/hooks/useProducts";
-import { IoCartOutline, IoCheckmarkCircle } from "react-icons/io5";
-import StoreCard from "./StoreCard";
-import { useAddItemToCart } from "../../../lib/hooks/useCart";
 import { useState } from "react";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router-dom";
+import { PiShoppingBagOpen, PiPackage } from "react-icons/pi";
+import { LuShieldCheck, LuTruck, LuHammer } from "react-icons/lu";
+import { useProductById, useProducts } from "../../../lib/hooks/useProducts";
+import { useAddToCartAction } from "../../../lib/hooks/useAddToCartAction";
 import { getImageUrl } from "../../../lib/hooks/getImageUrl";
+import { formatNumber } from "../../../lib/utils/format";
+import Breadcrumb from "../../components/ui/Breadcrumb";
+import EmptyState from "../../components/ui/EmptyState";
+import QuantityStepper from "../../components/ui/QuantityStepper";
+import Spinner from "../../components/ui/Spinner";
+import SectionHeading from "../../components/ui/SectionHeading";
+import ProductCard, { ProductGrid } from "../../components/product/ProductCard";
 
-function ProductPage() {
-  const { id } = useParams();
-
-  const { data: product, isLoading } = useProductById(id);
-  const { data: products } = useProducts(1, 1000, "");
-
-  const { mutate: addItemToCart } = useAddItemToCart()
-  const [addingId, setAddingId] = useState<string | null>(null)
-
-  const handleAddToCart = (productId: string) => {
-    setAddingId(productId);
-
-    addItemToCart(
-      {
-        productId,
-        quantity: 1,
-      },
-      {
-        onSuccess: () => {
-          toast.success("به سبد خرید اضافه شد");
-        },
-        onError: () => {
-          toast.error("خطا در افزودن به سبد خرید");
-        },
-        onSettled: () => {
-          setAddingId(null);
-        },
-      }
-    );
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-cream">
-        <ProductHeader />
-
-        <div className="flex h-96 items-center justify-center">
-          <p className="text-stone-600">در حال بارگذاری محصول...</p>
+function ProductPageSkeleton() {
+  return (
+    <div className="container-page py-6 md:py-8" aria-busy>
+      <div className="skeleton mb-6 h-4 w-60" />
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="skeleton aspect-square rounded-3xl" />
+        <div className="space-y-5">
+          <div className="skeleton h-6 w-24" />
+          <div className="skeleton h-10 w-3/4" />
+          <div className="skeleton h-28 w-full rounded-2xl" />
+          <div className="skeleton h-12 w-full rounded-xl" />
+          <div className="skeleton h-32 w-full rounded-2xl" />
         </div>
       </div>
-    );
+    </div>
+  );
+}
+
+function ProductPage() {
+  const { id = "" } = useParams();
+  const { data: product, isLoading } = useProductById(id);
+  const { data: products } = useProducts(1, 10, "");
+  const { addToCart, addingId } = useAddToCartAction();
+  const [quantity, setQuantity] = useState(1);
+  const [quantityFor, setQuantityFor] = useState(id);
+
+  // Reset quantity when navigating to another product.
+  if (quantityFor !== id) {
+    setQuantityFor(id);
+    setQuantity(1);
   }
+
+  if (isLoading) return <ProductPageSkeleton />;
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-cream">
-        <ProductHeader />
-
-        <div className="flex h-96 items-center justify-center">
-          <p className="text-stone-600">محصول پیدا نشد</p>
-        </div>
+      <div className="container-page py-16">
+        <EmptyState
+          icon={<PiPackage />}
+          title="این محصول پیدا نشد"
+          description="ممکن است محصول حذف شده باشد یا آدرس اشتباه وارد شده باشد."
+          action={<Link to="/products" className="btn btn-primary">مشاهده همه محصولات</Link>}
+        />
       </div>
     );
   }
 
-  const sameProducts =
+  const inStock = product.stock > 0;
+  const isAdding = addingId === product.id;
+  const similar =
     products?.items
       .filter(
-        (item) =>
-          item.categoryId.toLowerCase() === product.categoryId.toLowerCase() &&
-          item.id !== product.id,
+        (p) => p.status && p.id !== product.id && p.categoryId.toLowerCase() === product.categoryId.toLowerCase(),
       )
       .slice(0, 4) ?? [];
-  return (
-    <div className="min-h-screen bg-cream">
-      <ProductHeader />
 
-      <main className="mx-auto w-full max-w-7xl px-6 py-10">
-        {/* Breadcrumb */}
-        <div className="mb-6 text-sm text-stone-600">
-          خانه / {product.categoryName} / {product.name}
+  const handleAdd = () => addToCart(product.id, quantity);
+
+  return (
+    <div className="container-page py-6 pb-28 md:py-8 lg:pb-8">
+      <Breadcrumb
+        items={[
+          { label: "خانه", to: "/" },
+          { label: product.categoryName, to: `/products?category=${product.categoryId}` },
+          { label: product.name },
+        ]}
+      />
+
+      <section className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        {/* Image */}
+        <div className="card relative aspect-square overflow-hidden bg-gradient-to-br from-cream-100 to-copper-50 lg:sticky lg:top-36 lg:self-start">
+          <img
+            src={getImageUrl(product.image)}
+            alt={product.name}
+            className={`h-full w-full object-cover ${inStock ? "" : "opacity-60 grayscale"}`}
+          />
         </div>
 
-        {/* Product Main */}
-        <section
-          className="
-          grid
-          grid-cols-1
-          gap-10
-          rounded-3xl
-          border
-          border-copper-100
-          bg-white
-          p-6
-          shadow-sm
-          lg:grid-cols-2
-          lg:p-10
-        "
-        >
-          {/* Image */}
-          <div
-            className="
-            flex
-            items-center
-            justify-center
-            rounded-3xl
-            bg-gradient-to-br
-            from-cream-100
-            to-copper-50
-            p-8
-          "
+        {/* Details */}
+        <div className="flex flex-col">
+          <Link
+            to={`/products?category=${product.categoryId}`}
+            className="self-start rounded-lg bg-copper-50 px-3 py-1.5 text-xs font-semibold text-copper-700 transition-colors hover:bg-copper-100"
           >
-            <img
-              src={getImageUrl(product.image)}
-              alt={product.name}
-              className="
-              h-[480px]
-              w-full
-              object-contain
-              transition-transform
-              duration-500
-              hover:scale-110
-            "
-            />
+            {product.categoryName}
+          </Link>
+
+          <h1 className="mt-4 text-2xl leading-relaxed font-extrabold text-ink md:text-3xl">{product.name}</h1>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+            {inStock ? (
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-patina-50 px-2.5 py-1 font-medium text-patina-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-patina-500" />
+                موجود در انبار
+                {product.stock <= 5 && <span className="text-red-600">· تنها {formatNumber(product.stock)} عدد</span>}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-2.5 py-1 font-medium text-red-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                ناموجود
+              </span>
+            )}
+            {product.unit && <span className="text-stone-500">واحد فروش: {product.unit}</span>}
           </div>
 
-          {/* Details */}
-          <div className="flex flex-col justify-center space-y-7 text-right">
-            {/* Category */}
-            <div>
-              <span
-                className="
-                inline-flex
-                rounded-full
-                bg-copper-100
-                px-4
-                py-2
-                text-sm
-                font-semibold
-                text-copper-700
-              "
-              >
-                {product.categoryName}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h1
-              className="
-              font-display
-              text-4xl
-              leading-relaxed
-              text-ink
-              md:text-5xl
-            "
-            >
-              {product.name}
-            </h1>
-
-            {/* Price */}
-            <div
-              className="
-              rounded-2xl
-              border
-              border-copper-100
-              bg-copper-50
-              p-5
-            "
-            >
-              <p className="mb-2 text-sm text-stone-600">قیمت محصول</p>
-
-              <div className="flex items-center justify-end gap-2">
-                <span
-                  className="
-                  text-4xl
-                  font-black
-                  text-copper-700
-                "
-                >
-                  {product.price.toLocaleString()}
-                </span>
-
-                <span className="text-stone-600">تومان</span>
+          {/* Buy box */}
+          <div className="card mt-6 p-5">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm text-stone-600">قیمت</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-black text-ink">{formatNumber(product.price)}</span>
+                <span className="text-sm text-stone-500">تومان</span>
               </div>
             </div>
 
-            {/* Stock */}
-            <div className="flex justify-end">
-              {product.stock > 0 ? (
-                <div
-                  className="
-                  flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  bg-green-50
-                  px-5
-                  py-2
-                  text-green-700
-                "
-                >
-                  <IoCheckmarkCircle className="text-xl" />
-
-                  <span>موجود در انبار ({product.stock} عدد)</span>
-                </div>
-              ) : (
-                <div
-                  className="
-                  rounded-full
-                  bg-red-50
-                  px-5
-                  py-2
-                  text-red-600
-                "
-                >
-                  ناموجود
-                </div>
+            <div className="mt-5 hidden gap-3 lg:flex">
+              {inStock && (
+                <QuantityStepper
+                  value={quantity}
+                  max={product.stock}
+                  onIncrease={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                  onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
+                />
               )}
-            </div>
-
-            {/* Description */}
-            <div
-              className="
-              rounded-2xl
-              border
-              border-copper-100
-              bg-cream-100
-              p-6
-            "
-            >
-              <h3
-                className="
-                mb-3
-                text-lg
-                font-bold
-                text-ink
-              "
+              <button
+                type="button"
+                onClick={handleAdd}
+                disabled={!inStock || isAdding}
+                className="btn btn-primary btn-lg h-11 flex-1 py-0"
               >
-                توضیحات محصول
-              </h3>
-
-              <p
-                className="
-                leading-9
-                text-stone-600
-              "
-              >
-                {product.description ||
-                  "توضیحاتی برای این محصول ثبت نشده است."}
-              </p>
+                {isAdding ? <Spinner /> : <PiShoppingBagOpen className="text-xl" />}
+                {inStock ? (isAdding ? "در حال افزودن…" : "افزودن به سبد خرید") : "ناموجود"}
+              </button>
             </div>
-
-            {/* Cart Button */}
-            <button
-              disabled={product.stock <= 0 || addingId === product.id}
-              onClick={() => handleAddToCart(product.id)}
-              className="
-              flex
-              items-center
-              justify-center
-              gap-3
-              rounded-2xl
-              bg-gradient-to-r
-              from-copper-600
-              to-copper-500
-              py-4
-              text-lg
-              font-bold
-              text-cream
-              shadow-lg
-              shadow-copper-900/20
-              transition-all
-              hover:-translate-y-1
-              hover:shadow-xl
-              active:scale-95
-              disabled:bg-copper-200
-            "
-            >
-              <IoCartOutline className="text-3xl" />
-              {addingId === product.id
-                ? "در حال افزودن..."
-                : "افزودن به سبد خرید"}
-            </button>
-          </div>
-        </section>
-
-        {/* Similar Products */}
-        <section className="mt-14">
-          <div className="mb-7 flex items-center justify-between">
-            <h2
-              className="
-              font-display
-              text-2xl
-              text-ink
-            "
-            >
-              محصولات مشابه
-            </h2>
-
-            <div
-              className="
-              h-[3px]
-              w-20
-              rounded-full
-              bg-patina-500
-            "
-            />
           </div>
 
-          <div
-            className="
-            grid
-            grid-cols-1
-            gap-6
-            sm:grid-cols-2
-            lg:grid-cols-4
-          "
-          >
-            {sameProducts.map((item) => (
-              <StoreCard
-                id={item.id}
-                key={item.id}
-                img={getImageUrl(item.image)}
-                categoryName={item.categoryName}
-                name={item.name}
-                price={item.price}
-                onAddToCart={() => handleAddToCart(item.id)}
-                isAddingToCart={addingId === item.id}
-              />
+          {/* Perks */}
+          <ul className="mt-4 grid grid-cols-3 gap-2 text-center">
+            {[
+              { icon: LuShieldCheck, text: "ضمانت اصالت" },
+              { icon: LuHammer, text: "دست‌ساز" },
+              { icon: LuTruck, text: "ارسال ایمن" },
+            ].map(({ icon: Icon, text }) => (
+              <li key={text} className="flex flex-col items-center gap-1.5 rounded-xl bg-cream-100 px-2 py-3 text-xs text-ink-700">
+                <Icon className="text-xl text-copper-600" />
+                {text}
+              </li>
             ))}
+          </ul>
+
+          {/* Description */}
+          <div className="mt-8">
+            <h2 className="mb-3 text-lg font-bold text-ink">معرفی محصول</h2>
+            <p className="text-[15px] leading-8 whitespace-pre-line text-stone-600">
+              {product.description || "توضیحاتی برای این محصول ثبت نشده است."}
+            </p>
           </div>
+        </div>
+      </section>
+
+      {similar.length > 0 && (
+        <section className="mt-16 md:mt-20">
+          <SectionHeading eyebrow="پیشنهاد ما" title="محصولات مشابه" />
+          <ProductGrid>
+            {similar.map((item) => (
+              <ProductCard key={item.id} product={item} onAddToCart={addToCart} isAdding={addingId === item.id} />
+            ))}
+          </ProductGrid>
         </section>
-      </main>
+      )}
+
+      {/* Mobile sticky buy bar */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-7xl items-center gap-3">
+          {inStock && (
+            <QuantityStepper
+              size="sm"
+              value={quantity}
+              max={product.stock}
+              onIncrease={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+              onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
+            />
+          )}
+          <button type="button" onClick={handleAdd} disabled={!inStock || isAdding} className="btn btn-primary h-11 flex-1">
+            {isAdding ? <Spinner /> : <PiShoppingBagOpen className="text-lg" />}
+            {inStock ? "افزودن به سبد" : "ناموجود"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

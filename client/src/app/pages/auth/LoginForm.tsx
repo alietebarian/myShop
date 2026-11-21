@@ -1,38 +1,55 @@
-import AuthInput from "./AuthInput";
+import { useForm } from "react-hook-form";
 import { MdOutlineEmail } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
+import type { LoginRequest } from "../../../lib/types/types";
+import AuthInput from "./AuthInput";
+import Spinner from "../../components/ui/Spinner";
+
+export const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface LoginFormProps {
-  email: string;
-  password: string;
-  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  defaultEmail?: string;
+  onSubmit: (data: LoginRequest) => Promise<void>;
 }
 
+function LoginForm({ defaultEmail = "", onSubmit }: LoginFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginRequest>({ mode: "onTouched", defaultValues: { email: defaultEmail, password: "" } });
 
-function LoginForm({ email, password, onEmailChange, onPasswordChange } : LoginFormProps) {
   return (
-    <div className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
       <AuthInput
         icon={<MdOutlineEmail />}
         label="ایمیل"
-        placeholder="ایمیل خود را وارد کنید"
         type="email"
-        name="email"
-        value={email}
-        onChange={onEmailChange}
+        dir="ltr"
+        autoComplete="email"
+        placeholder="name@example.com"
+        error={errors.email?.message}
+        {...register("email", {
+          required: "ایمیل خود را وارد کنید",
+          pattern: { value: emailPattern, message: "ایمیل واردشده معتبر نیست" },
+        })}
       />
       <AuthInput
         icon={<RiLockPasswordLine />}
         label="رمز عبور"
-        placeholder="رمز عبور خود را وارد کنید"
         type="password"
-        name="password"
-        value={password}
-        onChange={onPasswordChange}
+        dir="ltr"
+        autoComplete="current-password"
+        error={errors.password?.message}
+        {...register("password", { required: "رمز عبور خود را وارد کنید" })}
       />
-    </div>
+
+      <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg mt-2 w-full">
+        {isSubmitting && <Spinner />}
+        {isSubmitting ? "در حال ورود…" : "ورود به حساب"}
+      </button>
+    </form>
   );
 }
 
-export default LoginForm
+export default LoginForm;

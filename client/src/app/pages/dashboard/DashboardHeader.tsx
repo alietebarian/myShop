@@ -1,37 +1,30 @@
-import { FaPlus } from "react-icons/fa";
+import { FiPlus } from "react-icons/fi";
+import { formatNumber } from "../../../lib/utils/format";
 
 interface DashboardHeaderProps {
   headerName: string;
   headerCount: number;
+  description?: string;
   buttonText: string;
-
   onAdd: () => void;
 }
 
-function DashboardHeader({
-  headerName,
-  headerCount,
-  buttonText,
-  onAdd,
-}: DashboardHeaderProps) {
+function DashboardHeader({ headerName, headerCount, description, buttonText, onAdd }: DashboardHeaderProps) {
   return (
-    <div className="mb-6 flex items-center justify-between border-b border-copper-100 pb-5">
-      {/* Title */}
-      <div className="flex items-center gap-3">
-        <h1 className="font-display text-2xl text-ink">{headerName}</h1>
-
-        <span className="rounded-full bg-copper-50 px-2.5 py-1 text-xs font-semibold text-copper-700">
-          {headerCount.toLocaleString()} مورد
-        </span>
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-extrabold text-ink">{headerName}</h1>
+          <span className="rounded-lg bg-copper-50 px-2 py-0.5 text-xs font-semibold text-copper-700">
+            {formatNumber(headerCount)}
+          </span>
+        </div>
+        {description && <p className="mt-1 text-sm text-stone-500">{description}</p>}
       </div>
 
-      {/* Button */}
-      <button
-        className="flex items-center gap-2 rounded-xl bg-copper-600 px-5 py-2.5 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-copper-700"
-        onClick={onAdd}
-      >
-        <FaPlus className="text-xs" />
-        <span>{buttonText}</span>
+      <button type="button" className="btn btn-primary" onClick={onAdd}>
+        <FiPlus className="text-base" />
+        {buttonText}
       </button>
     </div>
   );

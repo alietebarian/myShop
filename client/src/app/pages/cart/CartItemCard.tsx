@@ -1,192 +1,81 @@
-import { FaTrash } from "react-icons/fa";
-import { FiMinus, FiPlus } from "react-icons/fi";
-import {
-    useRemoveCartItem,
-    useUpdateCartItemQuantity,
-} from "../../../lib/hooks/useCart";
+import { Link } from "react-router-dom";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "sonner";
+import { useRemoveCartItem, useUpdateCartItemQuantity } from "../../../lib/hooks/useCart";
+import { useProductById } from "../../../lib/hooks/useProducts";
+import { getImageUrl } from "../../../lib/hooks/getImageUrl";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
+import { formatNumber } from "../../../lib/utils/format";
+import QuantityStepper from "../../components/ui/QuantityStepper";
+import type { CartItem } from "../../../lib/types/types";
 
-interface Props {
-    id: string;
-    productId: string;
-    image: string;
-    name: string;
-    price: number;
-    quantity: number;
-}
+function CartItemCard({ item }: { item: CartItem }) {
+  // Cart items don't carry an image; product details are cached by React Query.
+  const { data: product } = useProductById(item.productId);
+  const { mutate: updateQuantity, isPending: isUpdating } = useUpdateCartItemQuantity();
+  const { mutate: removeItem, isPending: isRemoving } = useRemoveCartItem();
+  const busy = isUpdating || isRemoving;
 
-function CartItemCard({
-    id,
-    image,
-    name,
-    price,
-    quantity,
-}: Props) {
-    const { mutate: updateQuantity, isPending: isUpdating } =
-        useUpdateCartItemQuantity();
+  const setQuantity = (quantity: number) =>
+    updateQuantity({ id: item.id, data: { quantity } }, { onError: (e) => toast.error(getErrorMessage(e)) });
 
-    const { mutate: removeItem, isPending: isRemoving } =
-        useRemoveCartItem();
+  const remove = () =>
+    removeItem(item.id, {
+      onSuccess: () => toast.success(`«${item.productName}» از سبد خرید حذف شد`),
+      onError: (e) => toast.error(getErrorMessage(e)),
+    });
 
-    const increase = () => {
-        updateQuantity(
-            {
-                id,
-                data: {
-                    quantity: quantity + 1,
-                },
-            },
-            {
-                onError: () => toast.error("خطا در بروزرسانی تعداد"),
-            }
-        );
-    };
+  const href = `/products/${item.productId}`;
 
-    const decrease = () => {
-        if (quantity <= 1) {
-            removeItem(id, {
-                onSuccess: () => toast.success("محصول حذف شد"),
-                onError: () => toast.error("خطا در حذف محصول"),
-            });
+  return (
+    <li className={`flex gap-4 p-4 transition-opacity sm:p-5 ${isRemoving ? "opacity-50" : ""}`}>
+      <Link to={href} className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-line bg-cream-100 sm:h-28 sm:w-28">
+        {product ? (
+          <img src={getImageUrl(product.image)} alt={item.productName} className="h-full w-full object-cover" />
+        ) : (
+          <div className="skeleton h-full w-full rounded-none" />
+        )}
+      </Link>
 
-            return;
-        }
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <Link to={href} className="line-clamp-2 font-bold text-ink transition-colors hover:text-copper-700">
+              {item.productName}
+            </Link>
+            <p className="mt-1 text-xs text-stone-500">قیمت واحد: {formatNumber(item.price)} تومان</p>
+          </div>
 
-        updateQuantity(
-            {
-                id,
-                data: {
-                    quantity: quantity - 1,
-                },
-            },
-            {
-                onError: () => toast.error("خطا در بروزرسانی تعداد"),
-            }
-        );
-    };
-
-    const remove = () => {
-        removeItem(id, {
-            onSuccess: () => toast.success("محصول حذف شد"),
-            onError: () => toast.error("خطا در حذف محصول"),
-        });
-    };
-
-    return (
-        <div
-            className="
-        flex
-        flex-col
-        gap-5
-        rounded-3xl
-        bg-white
-        p-5
-        shadow-sm
-        transition-all
-        hover:shadow-md
-        md:flex-row
-      "
-        >
-            {/* Image */}
-            <div className="flex justify-center">
-                <img
-                    src={image}
-                    alt={name}
-                    className="
-            h-32
-            w-32
-            rounded-2xl
-            object-cover
-            bg-cream-100
-            p-2
-          "
-                />
-            </div>
-
-            {/* Content */}
-            <div className="flex flex-1 flex-col justify-between">
-
-                <div className="text-right">
-                    <h3 className="text-lg font-bold text-ink">
-                        {name}
-                    </h3>
-
-                    <p className="mt-2 text-stone-600">
-                        {price.toLocaleString()} تومان
-                    </p>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between">
-
-                    {/* Delete */}
-                    <button
-                        disabled={isRemoving}
-                        onClick={remove}
-                        className="
-              flex
-              items-center
-              gap-2
-              text-red-500
-              transition
-              hover:text-red-600
-              disabled:opacity-50
-            "
-                    >
-                        <FaTrash />
-                        حذف
-                    </button>
-
-                    {/* Quantity */}
-                    <div
-                        className="
-              flex
-              items-center
-              gap-4
-              rounded-full
-              border
-              border-copper-200
-              px-4
-              py-2
-            "
-                    >
-                        <button
-                            disabled={isUpdating}
-                            onClick={increase}
-                            className="cursor-pointer"
-                        >
-                            <FiPlus />
-                        </button>
-
-                        <span className="font-bold">
-                            {quantity}
-                        </span>
-
-                        <button
-                            disabled={isUpdating}
-                            onClick={decrease}
-                            className="cursor-pointer"
-                        >
-                            <FiMinus />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Total */}
-            <div
-                className="
-          flex
-          items-center
-          justify-end
-          text-xl
-          font-black
-          text-copper-700
-        "
-            >
-                {(price * quantity).toLocaleString()} تومان
-            </div>
+          <button
+            type="button"
+            onClick={remove}
+            disabled={busy}
+            aria-label={`حذف ${item.productName} از سبد`}
+            title="حذف از سبد"
+            className="icon-btn -mt-1 -ml-2 h-9 w-9 text-stone-400 hover:bg-red-50 hover:text-red-600"
+          >
+            <FiTrash2 />
+          </button>
         </div>
-    );
+
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-3">
+          <QuantityStepper
+            size="sm"
+            value={item.quantity}
+            max={product?.stock}
+            loading={isUpdating}
+            removeAtOne
+            onIncrease={() => setQuantity(item.quantity + 1)}
+            onDecrease={() => (item.quantity <= 1 ? remove() : setQuantity(item.quantity - 1))}
+          />
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-extrabold text-ink">{formatNumber(item.price * item.quantity)}</span>
+            <span className="text-xs text-stone-500">تومان</span>
+          </div>
+        </div>
+      </div>
+    </li>
+  );
 }
 
 export default CartItemCard;

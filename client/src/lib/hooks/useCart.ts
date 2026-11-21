@@ -13,10 +13,11 @@ export const cartKeys = {
 /* -----------------------------
    GET CART
 ------------------------------*/
-export const useCart = () => {
+export const useCart = (enabled = true) => {
   return useQuery({
     queryKey: cartKeys.detail(),
     queryFn: () => cartApi.get(),
+    enabled,
   });
 };
 

@@ -1,89 +1,85 @@
-import { IoChevronForward, IoCheckmarkCircle } from "react-icons/io5";
 import { useCategories } from "../../../lib/hooks/useCategories";
+import { formatNumber } from "../../../lib/utils/format";
 
 type FilteredStoreProps = {
   selectedCategory: string;
   onSelectCategory: (id: string) => void;
 };
 
-function FilteredStore({
-  selectedCategory,
-  onSelectCategory,
-}: FilteredStoreProps) {
-  const { data: categories } = useCategories(1, 10, "");
+/** Desktop: vertical list in a sidebar card. Mobile: horizontal scrolling chips. */
+function FilteredStore({ selectedCategory, onSelectCategory }: FilteredStoreProps) {
+  const { data, isLoading } = useCategories(1, 10, "");
+  const categories = data?.items.filter((c) => c.status) ?? [];
+  const options = [{ id: "", name: "همه محصولات", productCount: undefined as number | undefined }, ...categories];
 
   return (
-    <div className="sticky top-24 h-fit rounded-2xl border border-copper-100 bg-white p-5 shadow-sm">
-      {/* Header */}
-      <div className="mb-4 border-b border-copper-100 pb-4">
-        <h2 className="flex items-center gap-2 text-xl font-bold text-ink">
-          <span className="h-6 w-1 rounded-full bg-patina-500"></span>
-          فیلترها
-        </h2>
-        <p className="mt-1 text-xs text-stone-400">دسته‌بندی محصولات</p>
+    <>
+      {/* Mobile chips */}
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar lg:hidden" role="radiogroup" aria-label="دسته‌بندی">
+        {isLoading
+          ? Array.from({ length: 4 }, (_, i) => <div key={i} className="skeleton h-9 w-24 shrink-0 rounded-full" />)
+          : options.map((c) => {
+              const active = selectedCategory === c.id;
+              return (
+                <button
+                  key={c.id || "all"}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => onSelectCategory(c.id)}
+                  className={`h-9 shrink-0 rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors ${
+                    active
+                      ? "border-copper-600 bg-copper-600 text-white"
+                      : "border-line bg-white text-ink-700 hover:border-copper-300"
+                  }`}
+                >
+                  {c.name}
+                </button>
+              );
+            })}
       </div>
 
-      {/* Categories */}
-      <div className="space-y-1">
-        <div className="mb-3 px-2 text-sm font-medium text-stone-600">
-          دسته‌بندی‌ها
-        </div>
-
-        <ul className="flex flex-col gap-2">
-          {categories?.items.map((category) => {
-            const isSelected = selectedCategory === category.id;
-
-            return (
-              <li key={category.id}>
-                <button
-                  onClick={() => onSelectCategory(category.id)}
-                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-3 text-right transition-all duration-200 active:scale-[0.98]
-                    ${
-                      isSelected
-                        ? "border-copper-300 bg-copper-50 shadow-sm"
-                        : "border-transparent hover:border-copper-100 hover:bg-copper-50"
-                    }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {isSelected && (
-                      <IoCheckmarkCircle className="text-lg text-copper-600" />
-                    )}
-
-                    <span
-                      className={`text-sm font-medium transition-colors ${
-                        isSelected ? "text-copper-700" : "text-ink-700"
+      {/* Desktop sidebar */}
+      <div className="card sticky top-36 hidden p-4 lg:block">
+        <h2 className="px-2 pb-3 text-sm font-bold text-ink">دسته‌بندی‌ها</h2>
+        <ul className="flex flex-col gap-0.5" role="radiogroup" aria-label="دسته‌بندی">
+          {isLoading
+            ? Array.from({ length: 5 }, (_, i) => (
+                <li key={i} className="skeleton my-1 h-8" />
+              ))
+            : options.map((c) => {
+                const active = selectedCategory === c.id;
+                return (
+                  <li key={c.id || "all"}>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => onSelectCategory(c.id)}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-right text-sm transition-colors ${
+                        active
+                          ? "bg-copper-50 font-semibold text-copper-700"
+                          : "text-ink-700 hover:bg-cream-100"
                       }`}
                     >
-                      {category.name}
-                    </span>
-                  </div>
-
-                  <IoChevronForward
-                    className={`text-sm transition-all ${
-                      isSelected
-                        ? "text-copper-600"
-                        : "text-stone-400 group-hover:text-copper-500"
-                    }`}
-                  />
-                </button>
-              </li>
-            );
-          })}
+                      <span className="flex items-center gap-2.5">
+                        <span
+                          className={`h-4 w-4 rounded-full border-2 transition-colors ${
+                            active ? "border-copper-600 bg-copper-600 shadow-[inset_0_0_0_2px_white]" : "border-stone-400/60"
+                          }`}
+                        />
+                        {c.name}
+                      </span>
+                      {c.productCount !== undefined && (
+                        <span className="text-xs text-stone-400">{formatNumber(c.productCount)}</span>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
         </ul>
       </div>
-
-      {/* Clear Filter */}
-      {selectedCategory && (
-        <div className="mt-5 border-t border-copper-100 pt-4">
-          <button
-            onClick={() => onSelectCategory("")}
-            className="w-full rounded-lg py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
-          >
-            حذف فیلتر دسته‌بندی
-          </button>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 

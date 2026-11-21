@@ -1,212 +1,153 @@
-import DashboardHeader from "./DashboardHeader";
-import CategoryCart from "../../layout/component/CategoryCart";
-import CategoryModal from "../../layout/component/CategoryModal";
 import { useState } from "react";
 import { toast } from "sonner";
-import { IoIosSearch } from "react-icons/io";
-import {
-  useCreateCategory,
-  useUpdateCategory,
-  useCategories,
-} from "../../../lib/hooks/useCategories";
-import type { Category } from "../../../lib/types/types";
+import { FiFolder, FiSearch } from "react-icons/fi";
+import DashboardHeader from "./DashboardHeader";
+import CategoryCard from "../../layout/component/CategoryCart";
+import CategoryModal from "../../layout/component/CategoryModal";
+import Pagination from "../../components/ui/Pagination";
+import EmptyState from "../../components/ui/EmptyState";
+import { useCreateCategory, useUpdateCategory, useCategories } from "../../../lib/hooks/useCategories";
+import { useDebouncedValue } from "../../../lib/hooks/useDebouncedValue";
 import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
+import type { Category } from "../../../lib/types/types";
 
-type ModalMode = "create" | "edit";
+const PAGE_SIZE = 9;
+
+type ModalState = { mode: "create" } | { mode: "edit"; category: Category } | null;
 
 function ManageCategories() {
-  const [openModal, setOpenModal] = useState(false);
-  const [mode, setMode] = useState<ModalMode>("create");
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null,
-  );
-
+  const [modal, setModal] = useState<ModalState>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 350);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  const pageSize = 9;
-
-  const { data, isLoading } = useCategories(pageNumber, pageSize, search);
+  const { data, isLoading, isFetching } = useCategories(pageNumber, PAGE_SIZE, debouncedSearch);
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
 
-  const totalPages = data?.totalPages ?? 1;
-
-  const editCategory = (category: Category) => {
-    setMode("edit");
-    setSelectedCategory(category);
-    setOpenModal(true);
-  };
-
-  const addCategory = () => {
-    setMode("create");
-    setSelectedCategory(null);
-    setOpenModal(true);
-  };
-
-  const toggleCategoryStatus = (category: Category) => {
+  const toggleStatus = (category: Category) => {
+    setTogglingId(category.id);
     updateCategory.mutate(
+      { id: category.id, data: { name: category.name, status: !category.status } },
       {
-        id: category.id,
-        data: {
-          name: category.name,
-          status: !category.status,
-        },
-      },
-      {
-        onError: (error) => {
-          toast.error(getErrorMessage(error));
-        },
+        onSuccess: () => toast.success(`«${category.name}» ${category.status ? "غیرفعال" : "فعال"} شد`),
+        onError: (e) => toast.error(getErrorMessage(e)),
+        onSettled: () => setTogglingId(null),
       },
     );
   };
 
+  const handleSave = (name: string) => {
+    if (modal?.mode === "edit") {
+      updateCategory.mutate(
+        { id: modal.category.id, data: { name, status: modal.category.status } },
+        {
+          onSuccess: () => {
+            toast.success("دسته‌بندی ویرایش شد");
+            setModal(null);
+          },
+          onError: (e) => toast.error(getErrorMessage(e)),
+        },
+      );
+    } else {
+      createCategory.mutate(
+        { name },
+        {
+          onSuccess: () => {
+            toast.success("دسته‌بندی جدید اضافه شد");
+            setModal(null);
+          },
+          onError: (e) => toast.error(getErrorMessage(e)),
+        },
+      );
+    }
+  };
+
+  const items = data?.items ?? [];
+
   return (
-    <>
-      {/* MODAL */}
-      {openModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm">
-          <CategoryModal
-            title={mode === "create" ? "افزودن" : "ویرایش"}
-            initialName={selectedCategory?.name ?? ""}
-            onClose={() => setOpenModal(false)}
-            onSave={(name) => {
-              if (mode === "create") {
-                createCategory.mutate(
-                  { name },
-                  {
-                    onSuccess: () => {
-                      toast.success("دسته‌بندی با موفقیت اضافه شد");
-                      setOpenModal(false);
-                    },
-                    onError: (error) => {
-                      toast.error(getErrorMessage(error));
-                    },
-                  },
-                );
-              } else if (selectedCategory) {
-                updateCategory.mutate(
-                  {
-                    id: selectedCategory.id,
-                    data: { name },
-                  },
-                  {
-                    onSuccess: () => {
-                      toast.success("دسته‌بندی با موفقیت ویرایش شد");
-                      setOpenModal(false);
-                    },
-                    onError: (error) => {
-                      toast.error(getErrorMessage(error));
-                    },
-                  },
-                );
-              }
-            }}
-          />
-        </div>
-      )}
+    <div>
+      <DashboardHeader
+        headerName="دسته‌بندی‌ها"
+        headerCount={data?.totalCount ?? 0}
+        description="دسته‌بندی‌های فعال در منوی فروشگاه نمایش داده می‌شوند"
+        buttonText="افزودن دسته‌بندی"
+        onAdd={() => setModal({ mode: "create" })}
+      />
 
-      <div>
-        {/* HEADER */}
-        <DashboardHeader
-          onAdd={addCategory}
-          buttonText="افزودن دسته‌بندی"
-          headerCount={data?.totalCount ?? 0}
-          headerName="مدیریت دسته‌بندی"
+      <div className="relative mb-5 max-w-sm">
+        <label htmlFor="cat-search" className="sr-only">جستجوی دسته‌بندی</label>
+        <FiSearch className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-stone-400" />
+        <input
+          id="cat-search"
+          type="search"
+          placeholder="جستجوی دسته‌بندی…"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPageNumber(1);
+          }}
+          className="input h-10 py-0 pr-10"
         />
+      </div>
 
-        {/* SEARCH */}
-        <div className="relative mb-6 max-w-sm">
-          <IoIosSearch className="absolute right-3.5 top-1/2 -translate-y-1/2 text-lg text-stone-400" />
-          <input
-            type="text"
-            placeholder="جستجوی دسته‌بندی..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPageNumber(1);
-            }}
-            className="w-full rounded-lg border border-copper-100 bg-cream-100 py-2.5 pr-10 pl-4 text-sm outline-none transition focus:border-copper-400 focus:bg-white focus:ring-4 focus:ring-copper-100"
-          />
-        </div>
-
-        {/* LOADING / EMPTY / GRID */}
+      <div className={`transition-opacity ${isFetching && !isLoading ? "opacity-60" : ""}`}>
         {isLoading ? (
-          <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
-            در حال بارگذاری...
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="skeleton h-36 rounded-2xl" />
+            ))}
           </div>
-        ) : data?.items.length === 0 ? (
-          <div className="rounded-xl border border-copper-100 bg-white py-20 text-center text-sm text-stone-600">
-            دسته‌بندی‌ای یافت نشد
-          </div>
+        ) : items.length === 0 ? (
+          debouncedSearch ? (
+            <EmptyState
+              icon={<FiSearch />}
+              title={`دسته‌بندی‌ای با نام «${debouncedSearch}» پیدا نشد`}
+              action={<button type="button" className="btn btn-secondary" onClick={() => setSearch("")}>پاک کردن جستجو</button>}
+            />
+          ) : (
+            <EmptyState
+              icon={<FiFolder />}
+              title="هنوز دسته‌بندی‌ای نساخته‌اید"
+              description="برای نظم‌دادن به محصولات، اولین دسته‌بندی را بسازید."
+              action={<button type="button" className="btn btn-primary" onClick={() => setModal({ mode: "create" })}>افزودن اولین دسته‌بندی</button>}
+            />
+          )
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {data?.items.map((category) => (
-              <CategoryCart
+            {items.map((category) => (
+              <CategoryCard
                 key={category.id}
                 catName={category.name}
                 catCount={category.productCount ?? 0}
                 status={category.status}
-                onEdit={() => editCategory(category)}
-                onToggleStatus={() => toggleCategoryStatus(category)}
+                busy={togglingId === category.id}
+                onEdit={() => setModal({ mode: "edit", category })}
+                onToggleStatus={() => toggleStatus(category)}
               />
             ))}
           </div>
         )}
-
-        {/* PAGINATION INFO */}
-        {!isLoading && data?.items.length ? (
-          <div className="mt-4 text-center text-sm text-stone-600">
-            نمایش{" "}
-            <span className="font-bold text-copper-600">
-              {data?.items.length}
-            </span>{" "}
-            از{" "}
-            <span className="font-bold text-copper-600">
-              {data?.totalCount}
-            </span>{" "}
-            دسته‌بندی
-          </div>
-        ) : null}
-
-        {/* PAGINATION */}
-        {!isLoading && totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-center gap-2 pb-10">
-            {/* Prev */}
-            <button
-              disabled={pageNumber === 1}
-              onClick={() => setPageNumber((p) => p - 1)}
-              className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ← قبلی
-            </button>
-
-            {/* Pages */}
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPageNumber(i + 1)}
-                className={`h-9 w-9 rounded-lg text-sm font-semibold transition-colors ${pageNumber === i + 1
-                    ? "bg-copper-600 text-cream"
-                    : "border border-copper-100 bg-white text-ink-700 hover:border-copper-300 hover:text-copper-600"
-                  }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            {/* Next */}
-            <button
-              disabled={pageNumber === totalPages}
-              onClick={() => setPageNumber((p) => p + 1)}
-              className="rounded-lg border border-copper-100 bg-white px-3.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-copper-300 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              بعدی →
-            </button>
-          </div>
-        )}
       </div>
-    </>
+
+      {data && (
+        <div className="mt-6">
+          <Pagination page={pageNumber} totalPages={data.totalPages} onChange={setPageNumber} />
+        </div>
+      )}
+
+      {modal && (
+        <CategoryModal
+          open
+          mode={modal.mode}
+          initialName={modal.mode === "edit" ? modal.category.name : ""}
+          saving={createCategory.isPending || (updateCategory.isPending && !togglingId)}
+          onClose={() => setModal(null)}
+          onSave={handleSave}
+        />
+      )}
+    </div>
   );
 }
 

@@ -66,10 +66,9 @@ export interface CreateProduct {
 }
 
 export interface EditProduct {
-  id: string;
   image?: File;
   name: string;
-  categoryName: string;
+  categoryId: string;
   price: number;
   stock: number;
   status: boolean;

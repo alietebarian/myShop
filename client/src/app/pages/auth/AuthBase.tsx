@@ -1,65 +1,31 @@
+import { LuShieldCheck, LuTruck, LuRefreshCw, LuHammer } from "react-icons/lu";
+import Logo from "../../components/ui/Logo";
 import AuthBaseItem from "./AuthBaseItem";
-import { BiCheckShield, BiRefresh } from "react-icons/bi";
-import { LuTruck } from "react-icons/lu";
-import { MdOutlineDiscount } from "react-icons/md";
 
+/** Brand panel shown beside the form on large screens. */
 function AuthBase() {
   return (
-    <div
-      className="
-      relative
-      flex
-      min-h-screen
-      flex-col
-      justify-between
-      overflow-hidden
-      p-16
-      bg-cover
-      bg-center
-      bg-no-repeat
-      bg-[#f4ecdf]
-      "
-      >
-      {/* Header */}
+    <div className="relative flex h-full flex-col justify-between overflow-hidden bg-ink p-10 xl:p-14">
+      <div className="hammered-texture-light absolute inset-0 opacity-40" />
+      <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-copper-700/30 blur-3xl" />
 
-      <div>
-        <p className="text-xs tracking-[3px] text-[#b96b2c]">مسکده - از ۱۳۸۳</p>
-
-        <h1 className="mt-6 font-display text-5xl leading-18 text-[#221a15]">
+      <div className="relative">
+        <Logo tone="light" />
+        <h1 className="mt-14 font-display text-5xl leading-[1.35] text-cream">
           به خانواده
           <br />
-          <span className="text-[#b96b2c]">مس کده</span>
-          <br />
-          بپیوندید
+          <span className="text-copper-400">مس‌کده</span> بپیوندید
         </h1>
+        <p className="mt-5 max-w-sm text-sm leading-7 text-stone-400">
+          با ساخت حساب کاربری، سفارش‌هایتان را ثبت و پیگیری کنید و از جدیدترین ظروف مسی دست‌ساز باخبر شوید.
+        </p>
       </div>
 
-      {/* Features */}
-
-      <div className="space-y-6">
-        <AuthBaseItem
-          icon={<BiCheckShield />}
-          title="خرید امن"
-          description="پرداخت با درگاه بانکی معتبر"
-          />
-
-        <AuthBaseItem
-          icon={<LuTruck />}
-          title="ارسال سریع"
-          description="ارسال به سراسر ایران ظرف ۴۸ ساعت"
-        />
-
-        <AuthBaseItem
-          icon={<BiRefresh />}
-          title="ضمانت بازگشت"
-          description="۷ روز ضمانت بازگشت کالا"
-          />
-
-        <AuthBaseItem
-          icon={<MdOutlineDiscount />}
-          title="تخفیف اعضا"
-          description="دسترسی به کدهای تخفیف ویژه"
-          />
+      <div className="relative grid grid-cols-2 gap-6">
+        <AuthBaseItem icon={<LuShieldCheck />} title="خرید امن" description="ضمانت اصالت کالا" />
+        <AuthBaseItem icon={<LuTruck />} title="ارسال ایمن" description="بسته‌بندی مخصوص ظروف" />
+        <AuthBaseItem icon={<LuHammer />} title="دست‌ساز" description="ساخت استادکاران مس" />
+        <AuthBaseItem icon={<LuRefreshCw />} title="پیگیری آسان" description="وضعیت سفارش در لحظه" />
       </div>
     </div>
   );

@@ -1,127 +1,77 @@
-import ProductHeader from "../../layout/component/ProductHeader";
+import { Link, useSearchParams } from "react-router-dom";
+import { FiAlertCircle, FiPackage } from "react-icons/fi";
 import { useMyOrders } from "../../../lib/hooks/useOrder";
+import { formatNumber } from "../../../lib/utils/format";
 import OrderCard from "./OrderCard";
-import { useState } from "react";
+import Pagination from "../../components/ui/Pagination";
+import EmptyState from "../../components/ui/EmptyState";
+import Breadcrumb from "../../components/ui/Breadcrumb";
+
+const PAGE_SIZE = 9;
 
 function OrdersListPage() {
-    const [ pageNumber, setPageNumber ] = useState(1)
-    const pageSize = 9
-    const { data: orders, isLoading, isError } = useMyOrders(pageNumber, pageSize);
-    const totalPages = orders?.totalPages
+  const [params, setParams] = useSearchParams();
+  const pageNumber = Math.max(1, Number(params.get("page")) || 1);
+  const { data: orders, isLoading, isError, refetch } = useMyOrders(pageNumber, PAGE_SIZE);
 
-    if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gray-100">
-                <ProductHeader />
-                <div className="mx-auto max-w-4xl px-6 py-10">
-                    <div className="animate-pulse space-y-5">
-                        <div className="h-8 w-52 rounded bg-gray-300" />
-                        <div className="h-28 rounded-3xl bg-gray-300" />
-                        <div className="h-28 rounded-3xl bg-gray-300" />
-                        <div className="h-28 rounded-3xl bg-gray-300" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (isError) {
-        return (
-            <div className="min-h-screen bg-gray-100">
-                <ProductHeader />
-                <div className="flex h-[70vh] items-center justify-center">
-                    <p className="text-lg text-red-500">خطا در دریافت سفارش‌ها</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!orders || orders.items.length === 0) {
-        return (
-            <div className="min-h-screen bg-gray-100">
-                <ProductHeader />
-                <div className="flex h-[70vh] flex-col items-center justify-center gap-6">
-                    <div className="rounded-full bg-gray-200 p-8 text-4xl">📦</div>
-                    <h2 className="text-3xl font-bold">هنوز سفارشی ثبت نکرده‌اید</h2>
-                    <p className="text-gray-500">سفارش‌های شما اینجا نمایش داده می‌شوند.</p>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-gray-100">
-            <ProductHeader />
-
-            <main className="mx-auto max-w-4xl px-6 py-10">
-                <h1 className="mb-8 text-right text-3xl font-black">سفارش‌های من</h1>
-
-                <div className="space-y-5">
-                    {orders.items.map((order) => (
-                        <OrderCard
-                            key={order.id}
-                            id={order.id}
-                            createdAt={order.createdAt}
-                            totalPrice={order.totalPrice}
-                            status={order.status}
-                            itemsCount={order.items.length}
-                        />
-                    ))}
-                </div>
-            </main>
-            {/* PAGINATION INFO */}
-            {!isLoading && orders?.items.length ? (
-                <div className="text-center text-sm text-gray-500">
-                    نمایش{" "}
-                    <span className="font-bold text-orange-600">
-                        {orders?.items.length}
-                    </span>{" "}
-                    از{" "}
-                    <span className="font-bold text-orange-600">
-                        {orders?.totalCount}
-                    </span>{" "}
-                    محصول
-                </div>
-            ) : null}
-
-            {/* PAGINATION */}
-            {!isLoading && totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center gap-2 pb-10">
-                    {/* Prev */}
-                    <button
-                        disabled={pageNumber === 1}
-                        onClick={() => setPageNumber((p) => p - 1)}
-                        className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        ← قبلی
-                    </button>
-
-                    {/* Pages */}
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setPageNumber(i + 1)}
-                            className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
-                                ? "bg-orange-500 text-white shadow-lg"
-                                : "border border-gray-200 bg-white hover:border-orange-400 hover:text-orange-600"
-                                }`}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
-
-                    {/* Next */}
-                    <button
-                        disabled={pageNumber === totalPages}
-                        onClick={() => setPageNumber((p) => p + 1)}
-                        className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-all hover:border-orange-400 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        بعدی →
-                    </button>
-                </div>
-            )}
-        </div>
+  let content;
+  if (isLoading) {
+    content = (
+      <div className="space-y-4" aria-busy>
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="skeleton h-36 rounded-2xl" />
+        ))}
+      </div>
     );
+  } else if (isError) {
+    content = (
+      <EmptyState
+        icon={<FiAlertCircle />}
+        title="دریافت سفارش‌ها ممکن نشد"
+        description="اتصال به سرور برقرار نشد. لحظاتی بعد دوباره تلاش کنید."
+        action={<button type="button" className="btn btn-primary" onClick={() => refetch()}>تلاش دوباره</button>}
+      />
+    );
+  } else if (!orders || orders.items.length === 0) {
+    content = (
+      <EmptyState
+        icon={<FiPackage />}
+        title="هنوز سفارشی ثبت نکرده‌اید"
+        description="بعد از ثبت اولین سفارش، وضعیت و جزئیات آن را اینجا می‌بینید."
+        action={<Link to="/products" className="btn btn-primary">مشاهده محصولات</Link>}
+      />
+    );
+  } else {
+    content = (
+      <>
+        <div className="space-y-4">
+          {orders.items.map((order) => (
+            <OrderCard key={order.id} order={order} />
+          ))}
+        </div>
+        <div className="mt-10">
+          <Pagination
+            page={pageNumber}
+            totalPages={orders.totalPages}
+            onChange={(p) => setParams(p === 1 ? {} : { page: String(p) })}
+          />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 md:py-8">
+      <Breadcrumb items={[{ label: "خانه", to: "/" }, { label: "سفارش‌های من" }]} />
+      <div className="mb-6">
+        <h1 className="font-display text-3xl text-ink">سفارش‌های من</h1>
+        {orders && orders.totalCount > 0 && (
+          <p className="mt-1 text-sm text-stone-500">{formatNumber(orders.totalCount)} سفارش</p>
+        )}
+      </div>
+      {content}
+    </div>
+  );
 }
 
 export default OrdersListPage;

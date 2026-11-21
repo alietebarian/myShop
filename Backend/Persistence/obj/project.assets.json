@@ -4087,11 +4087,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\project\\Backend\\Persistence\\Persistence.csproj",
+      "projectUniqueName": "E:\\Projects\\ShopProject\\Backend\\Persistence\\Persistence.csproj",
       "projectName": "Persistence",
-      "projectPath": "E:\\project\\Backend\\Persistence\\Persistence.csproj",
+      "projectPath": "E:\\Projects\\ShopProject\\Backend\\Persistence\\Persistence.csproj",
       "packagesPath": "C:\\Users\\Ali\\.nuget\\packages\\",
-      "outputPath": "E:\\project\\Backend\\Persistence\\obj\\",
+      "outputPath": "E:\\Projects\\ShopProject\\Backend\\Persistence\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -4114,8 +4114,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\project\\Backend\\Domain\\Domain.csproj": {
-              "projectPath": "E:\\project\\Backend\\Domain\\Domain.csproj"
+            "E:\\Projects\\ShopProject\\Backend\\Domain\\Domain.csproj": {
+              "projectPath": "E:\\Projects\\ShopProject\\Backend\\Domain\\Domain.csproj"
             }
           }
         }
@@ -4130,7 +4130,7 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "11.0.100"
     },
     "frameworks": {
       "net10.0": {
@@ -4168,7 +4168,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\11.0.100/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -4445,5 +4445,27 @@
         }
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.4 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7",
+      "libraryId": "System.Security.Cryptography.Pkcs",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.4 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx",
+      "libraryId": "System.Security.Cryptography.Pkcs",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }

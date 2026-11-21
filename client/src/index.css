@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* -- Copper: the brand's core metal, not Tailwind's stock amber -- */
+  /* -- Copper: the brand's core metal -- */
   --color-copper-50: #fdf6ef;
   --color-copper-100: #f8e8d6;
   --color-copper-200: #efceac;
@@ -13,23 +13,47 @@
   --color-copper-800: #5e321c;
   --color-copper-900: #3f2316;
 
-  /* -- Patina: the signature accent -- the green a copper surface */
-  /* takes on with age and honest use. Used sparingly. -- */
+  /* -- Patina: the signature accent, used sparingly -- */
+  --color-patina-50: #eef4f0;
+  --color-patina-100: #d9e7de;
   --color-patina-400: #86a893;
   --color-patina-500: #5f8672;
   --color-patina-600: #476859;
+  --color-patina-700: #36503f;
 
-  /* -- Warm neutrals: ink instead of gray-900, cream instead of white -- */
+  /* -- Warm neutrals -- */
   --color-ink: #221a15;
   --color-ink-700: #392c24;
   --color-stone-600: #6f6055;
+  --color-stone-500: #8a7a6b;
   --color-stone-400: #a3937f;
   --color-cream: #fbf6ef;
   --color-cream-100: #f4ecdf;
   --color-cream-200: #ece0cc;
+  --color-line: #efe4d4;
 
   --font-display: "Lalezar", "Vazirmatn", sans-serif;
   --font-sans: "Vazirmatn", "Tahoma", sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(34 26 21 / 0.04), 0 4px 16px -4px rgb(34 26 21 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(34 26 21 / 0.04), 0 16px 32px -12px rgb(34 26 21 / 0.18);
+
+  --animate-fade-in: fade-in 200ms ease-out both;
+  --animate-pop-in: pop-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-slide-in: slide-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: none; }
+  }
 }
 
 html,
@@ -43,27 +67,90 @@ body,
 body {
   font-family: var(--font-sans);
   color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Signature texture: a faint hammered-copper dot pattern.
-   Used on the hero and as section dividers -- references the
-   چکش‌کاری (hand-hammering) technique that makes the product handmade. */
+@layer components {
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors duration-150 select-none disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-lg {
+    @apply px-6 py-3.5 text-base;
+  }
+  .btn-sm {
+    @apply rounded-lg px-3.5 py-2 text-xs;
+  }
+  .btn-primary {
+    @apply bg-copper-600 text-white shadow-sm hover:bg-copper-700 active:bg-copper-800;
+  }
+  .btn-secondary {
+    @apply border border-line bg-white text-ink-700 hover:border-copper-300 hover:bg-copper-50 hover:text-copper-700;
+  }
+  .btn-ghost {
+    @apply text-ink-700 hover:bg-cream-100 hover:text-copper-700;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white shadow-sm hover:bg-red-700;
+  }
+  .btn-danger-outline {
+    @apply border border-red-200 bg-white text-red-600 hover:bg-red-50;
+  }
+  .icon-btn {
+    @apply inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl text-ink-700 transition-colors hover:bg-cream-100 hover:text-copper-700 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  /* ---------- Forms ---------- */
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-700;
+  }
+  .field-hint {
+    @apply mt-1.5 text-xs text-stone-500;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink transition outline-none placeholder:text-stone-400 hover:border-copper-200 focus:border-copper-400 focus:ring-4 focus:ring-copper-100 disabled:bg-cream-100;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .card {
+    @apply rounded-2xl border border-line bg-white;
+  }
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-cream-200/70;
+  }
+}
+
+/* Signature texture: hammered-copper dot pattern (چکش‌کاری). */
 .hammered-texture {
-  background-image: radial-gradient(
-      circle at 1px 1px,
-      rgba(34, 26, 21, 0.09) 1px,
-      transparent 0
-    );
+  background-image: radial-gradient(circle at 1px 1px, rgba(34, 26, 21, 0.09) 1px, transparent 0);
   background-size: 18px 18px;
 }
 
 .hammered-texture-light {
-  background-image: radial-gradient(
-      circle at 1px 1px,
-      rgba(251, 246, 239, 0.15) 1px,
-      transparent 0
-    );
+  background-image: radial-gradient(circle at 1px 1px, rgba(251, 246, 239, 0.15) 1px, transparent 0);
   background-size: 18px 18px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Remove number input spinners — we use explicit steppers. */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 ::selection {
@@ -74,4 +161,15 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-copper-500);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }

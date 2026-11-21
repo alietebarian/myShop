@@ -1,143 +1,180 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import ProductHeader from "../../layout/component/ProductHeader";
+import { FiCheck, FiPackage, FiXCircle } from "react-icons/fi";
 import { useOrderById, useCancelOrder } from "../../../lib/hooks/useOrder";
-import { cancellableStatuses, getOrderStatus } from "./orderStatus";
-// import { getOrderStatus, cancellableStatuses } from "../../../lib/utils/orderStatus";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
+import { formatDateTime, formatNumber, shortId } from "../../../lib/utils/format";
+import { cancellableStatuses, getOrderStatus, orderSteps } from "./orderStatus";
+import OrderStatusBadge from "./OrderStatusBadge";
+import Breadcrumb from "../../components/ui/Breadcrumb";
+import EmptyState from "../../components/ui/EmptyState";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
+
+function OrderProgress({ status }: { status: string }) {
+  if (status === "Cancelled") {
+    return (
+      <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+        <FiXCircle className="shrink-0 text-xl" />
+        این سفارش لغو شده است.
+      </div>
+    );
+  }
+
+  const current = orderSteps.indexOf(status as (typeof orderSteps)[number]);
+
+  return (
+    <ol className="flex items-start">
+      {orderSteps.map((step, i) => {
+        const done = i < current;
+        const active = i === current;
+        return (
+          <li key={step} className="relative flex flex-1 flex-col items-center text-center">
+            {i > 0 && (
+              <span
+                className={`absolute top-4 -right-1/2 left-1/2 h-0.5 ${i <= current ? "bg-copper-500" : "bg-line"}`}
+                aria-hidden
+              />
+            )}
+            <span
+              className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold ${
+                done
+                  ? "border-copper-500 bg-copper-500 text-white"
+                  : active
+                    ? "border-copper-500 bg-white text-copper-700 ring-4 ring-copper-100"
+                    : "border-line bg-white text-stone-400"
+              }`}
+            >
+              {done ? <FiCheck /> : formatNumber(i + 1)}
+            </span>
+            <span className={`mt-2 px-1 text-[11px] leading-4 sm:text-xs ${active ? "font-bold text-ink" : "text-stone-500"}`}>
+              {getOrderStatus(step).label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 function OrderDetailsPage() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+  const { id = "" } = useParams<{ id: string }>();
+  const { data: order, isLoading, isError } = useOrderById(id);
+  const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder();
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
-    const { data: order, isLoading, isError } = useOrderById(id!);
-    const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder();
-
-    const handleCancel = () => {
-        if (!id) return;
-
-        cancelOrder(id, {
-            onSuccess: () => {
-                toast.success("سفارش لغو شد");
-            },
-            onError: () => {
-                toast.error("خطا در لغو سفارش");
-            },
-        });
-    };
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gray-100">
-                <ProductHeader />
-
-                <div className="mx-auto max-w-3xl px-6 py-10">
-                    <div className="animate-pulse space-y-5">
-                        <div className="h-8 w-52 rounded bg-gray-300" />
-                        <div className="h-40 rounded-3xl bg-gray-300" />
-                        <div className="h-40 rounded-3xl bg-gray-300" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (isError || !order) {
-        return (
-            <div className="min-h-screen bg-gray-100">
-                <ProductHeader />
-
-                <div className="flex h-[70vh] items-center justify-center">
-                    <p className="text-lg text-red-500">سفارش یافت نشد</p>
-                </div>
-            </div>
-        );
-    }
-
-    const { label, className } = getOrderStatus(order.status);
-    const canCancel = cancellableStatuses.includes(order.status);
-
+  if (isLoading) {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <ProductHeader />
-
-            <main className="mx-auto max-w-3xl px-6 py-10">
-                <div className="mb-8 flex items-center justify-between">
-                    <h1 className="text-right text-3xl font-black">جزئیات سفارش</h1>
-
-                    <span
-                        className={`rounded-full px-4 py-2 text-sm font-bold ${className}`}
-                    >
-                        {label}
-                    </span>
-                </div>
-
-                <div className="mb-6 rounded-3xl bg-white p-6 shadow-sm">
-                    <p className="text-sm text-gray-400">
-                        تاریخ ثبت سفارش:{" "}
-                        {new Date(order.createdAt).toLocaleDateString("fa-IR")}
-                    </p>
-                </div>
-
-                <div className="space-y-4">
-                    {order.items.map((item) => (
-                        <div
-                            key={item.productId}
-                            className="flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm"
-                        >
-                            <div className="text-right">
-                                <p className="font-bold text-gray-800">{item.productName}</p>
-                                <p className="mt-1 text-sm text-gray-500">
-                                    {item.price.toLocaleString()} تومان × {item.quantity}
-                                </p>
-                            </div>
-
-                            <span className="font-black text-amber-700">
-                                {(item.price * item.quantity).toLocaleString()} تومان
-                            </span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-6 rounded-3xl bg-white p-6 shadow-sm">
-                    <div className="flex justify-between text-lg">
-                        <span>مبلغ کل</span>
-                        <span className="font-black text-amber-700">
-                            {order.totalPrice.toLocaleString()} تومان
-                        </span>
-                    </div>
-                </div>
-
-                {canCancel && (
-                    <button
-                        onClick={handleCancel}
-                        disabled={isCancelling}
-                        className="
-              mt-6
-              w-full
-              rounded-xl
-              border
-              border-red-300
-              py-4
-              font-bold
-              text-red-600
-              transition
-              hover:bg-red-50
-              disabled:opacity-50
-            "
-                    >
-                        {isCancelling ? "در حال لغو..." : "لغو سفارش"}
-                    </button>
-                )}
-
-                <button
-                    onClick={() => navigate("/orders")}
-                    className="mt-3 w-full rounded-xl bg-gray-200 py-4 font-bold text-gray-700 transition hover:bg-gray-300"
-                >
-                    بازگشت به سفارش‌ها
-                </button>
-            </main>
-        </div>
+      <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-8 sm:px-6" aria-busy>
+        <div className="skeleton h-8 w-52" />
+        <div className="skeleton h-32 rounded-2xl" />
+        <div className="skeleton h-64 rounded-2xl" />
+      </div>
     );
+  }
+
+  if (isError || !order) {
+    return (
+      <div className="container-page py-16">
+        <EmptyState
+          icon={<FiPackage />}
+          title="این سفارش پیدا نشد"
+          description="ممکن است آدرس اشتباه باشد یا سفارش متعلق به حساب دیگری باشد."
+          action={<Link to="/orders" className="btn btn-primary">بازگشت به سفارش‌ها</Link>}
+        />
+      </div>
+    );
+  }
+
+  const canCancel = cancellableStatuses.includes(order.status);
+  const itemsCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
+
+  return (
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 md:py-8">
+      <Breadcrumb
+        items={[
+          { label: "خانه", to: "/" },
+          { label: "سفارش‌های من", to: "/orders" },
+          { label: `#${shortId(order.id)}` },
+        ]}
+      />
+
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl text-ink">
+            سفارش <span dir="ltr">#{shortId(order.id)}</span>
+          </h1>
+          <p className="mt-1 text-sm text-stone-500">ثبت‌شده در {formatDateTime(order.createdAt)}</p>
+        </div>
+        <OrderStatusBadge status={order.status} />
+      </div>
+
+      <section className="card p-5 sm:p-6">
+        <h2 className="mb-5 text-sm font-bold text-ink">وضعیت سفارش</h2>
+        <OrderProgress status={order.status} />
+      </section>
+
+      <section className="card mt-4">
+        <h2 className="border-b border-line px-5 py-4 text-sm font-bold text-ink sm:px-6">
+          اقلام سفارش <span className="font-normal text-stone-500">({formatNumber(itemsCount)} کالا)</span>
+        </h2>
+        <ul className="divide-y divide-line">
+          {order.items.map((item) => (
+            <li key={item.productId} className="flex items-center justify-between gap-4 px-5 py-4 sm:px-6">
+              <div className="min-w-0">
+                <Link to={`/products/${item.productId}`} className="font-semibold text-ink hover:text-copper-700">
+                  {item.productName}
+                </Link>
+                <p className="mt-1 text-xs text-stone-500">
+                  {formatNumber(item.quantity)} × {formatNumber(item.price)} تومان
+                </p>
+              </div>
+              <span className="shrink-0 font-bold text-ink">
+                {formatNumber(item.price * item.quantity)} <span className="text-xs font-normal text-stone-500">تومان</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-baseline justify-between border-t border-line bg-cream/60 px-5 py-4 sm:px-6">
+          <span className="font-bold text-ink">مبلغ کل</span>
+          <span className="flex items-baseline gap-1">
+            <span className="text-xl font-black text-copper-700">{formatNumber(order.totalPrice)}</span>
+            <span className="text-xs text-stone-500">تومان</span>
+          </span>
+        </div>
+      </section>
+
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+        <Link to="/orders" className="btn btn-secondary">
+          بازگشت به سفارش‌ها
+        </Link>
+        {canCancel && (
+          <button type="button" onClick={() => setConfirmCancel(true)} className="btn btn-danger-outline">
+            لغو سفارش
+          </button>
+        )}
+      </div>
+
+      <ConfirmDialog
+        open={confirmCancel}
+        title={`لغو سفارش #${shortId(order.id)}`}
+        message="با لغو این سفارش، پردازش آن متوقف می‌شود و این کار قابل بازگشت نیست. آیا مطمئن هستید؟"
+        confirmText="لغو سفارش"
+        cancelText="منصرف شدم"
+        loading={isCancelling}
+        onClose={() => setConfirmCancel(false)}
+        onConfirm={() =>
+          cancelOrder(order.id, {
+            onSuccess: () => {
+              toast.success("سفارش لغو شد");
+              setConfirmCancel(false);
+            },
+            onError: (e) => toast.error(getErrorMessage(e)),
+          })
+        }
+      />
+    </div>
+  );
 }
 
 export default OrderDetailsPage;

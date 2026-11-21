@@ -1,177 +1,109 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import AuthBase from "./AuthBase";
 import AuthHeader from "./AuthHeader";
 import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
-
 import { useAuth } from "../../../features/context/useAuth";
 import { authApi } from "../../../lib/api/authApi";
+import { getErrorMessage } from "../../../lib/hooks/getErrorMessage";
+import type { LoginRequest, RegisterRequest } from "../../../lib/types/types";
+
+type Mode = "login" | "register";
 
 function AuthPage() {
-  const [btn, setBtn] = useState<"login" | "register">("login");
-
-  // Login State
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  // Register State
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-
-  const { login } = useAuth();
+  const [mode, setMode] = useState<Mode>("login");
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const { login, token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from ?? "/";
 
-  const handleLogin = async () => {
-    const response = await authApi.login({
-      email,
-      password,
-    });
+  if (token) return <Navigate to={from} replace />;
 
-    login(response.accessToken, {
-      userId: response.userId,
-      email: response.email,
-      fullName: response.fullName,
-      role: response.role
-    });
-        
-    navigate("/");
-  };
-
-  const handleRegister = async () => {
-    await authApi.register({
-      firstName,
-      lastName,
-      email,
-      password,
-      phoneNumber,
-    });
-
-    // بعد از ثبت نام فرم پاک شود
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
-    setPhoneNumber("");
-
-    // انتقال به صفحه ورود
-    setBtn("login");
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleLogin = async (data: LoginRequest) => {
     try {
-      if (btn === "login") {
-        await handleLogin();
-      } else {
-        await handleRegister();
-      }
+      const res = await authApi.login(data);
+      login(res.accessToken, {
+        userId: res.userId,
+        email: res.email,
+        fullName: res.fullName,
+        role: res.role,
+      });
+      toast.success(`${res.fullName} عزیز، خوش آمدید`);
+      navigate(from, { replace: true });
     } catch (error) {
-      console.error(error);
+      toast.error(getErrorMessage(error) || "ایمیل یا رمز عبور درست نیست.");
     }
   };
 
+  const handleRegister = async (data: RegisterRequest) => {
+    try {
+      await authApi.register(data);
+      toast.success("حساب شما ساخته شد. اکنون وارد شوید.");
+      setRegisteredEmail(data.email);
+      setMode("login");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  const tab = (value: Mode, label: string) => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={mode === value}
+      onClick={() => setMode(value)}
+      className={`h-10 flex-1 rounded-lg text-sm font-semibold transition-colors ${
+        mode === value ? "bg-white text-ink shadow-soft" : "text-stone-600 hover:text-ink"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <>
-      <AuthHeader />
+    <div className="flex min-h-screen bg-cream">
+      <aside className="sticky top-0 hidden h-screen w-[42%] max-w-xl lg:block">
+        <AuthBase />
+      </aside>
 
-      <div className="flex justify-between">
+      <div className="flex flex-1 flex-col">
+        <AuthHeader />
 
-        {/* Right Side */}
-        <div className="w-[30%]">
-          <AuthBase />
-        </div>
-        {/* Left Side */}
-        <div className="mx-auto mt-16">
-          <div className="flex py-1 w-120">
-            <button
-              type="button"
-              className={`flex-1 p-3 px-8 text-sm font-medium transition-all duration-300 cursor-pointer rounded-r-none ${
-                btn === "login"
-                  ? "bg-[#9a5322] text-white shadow-md border-2 border-[#9a5322]"
-                  : "bg-transparent text-gray-600 hover:text-gray-800 border-2 border-gray-300"
-              }`}
-              onClick={() => setBtn("login")}
-            >
-              ورود به حساب کاربری
-            </button>
+        <main className="flex flex-1 items-start justify-center px-4 pt-6 pb-16 sm:items-center sm:pt-0">
+          <div className="w-full max-w-md">
+            <h1 className="text-2xl font-extrabold text-ink">
+              {mode === "login" ? "ورود به حساب کاربری" : "ساخت حساب کاربری"}
+            </h1>
+            <p className="mt-2 text-sm text-stone-600">
+              {mode === "login" ? "حساب کاربری ندارید؟ " : "قبلاً ثبت‌نام کرده‌اید؟ "}
+              <button
+                type="button"
+                onClick={() => setMode(mode === "login" ? "register" : "login")}
+                className="font-semibold text-copper-700 hover:underline"
+              >
+                {mode === "login" ? "ثبت‌نام کنید" : "وارد شوید"}
+              </button>
+            </p>
 
-            <button
-              type="button"
-              className={`flex-1 p-3 px-8 text-sm font-medium transition-all duration-300 cursor-pointer rounded-l-none ${
-                btn === "register"
-                  ? "bg-[#9a5322] text-white shadow-md border-2 border-[#9a5322]"
-                  : "bg-transparent text-gray-600 hover:text-gray-800 border-2 border-gray-300"
-              }`}
-              onClick={() => setBtn("register")}
-            >
-              ثبت نام
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mt-8">
-              <div className="text-right my-8">
-                <span className="text-xl font-semibold">
-                  {btn === "login"
-                    ? "ورود به حساب کاربری"
-                    : "ایجاد حساب کاربری"}
-                </span>
-
-                <div className="flex justify-end gap-1 pt-3">
-                  <span
-                    className="text-[#9a5322] border-b font-semibold cursor-pointer"
-                    onClick={() =>
-                      setBtn(btn === "login" ? "register" : "login")
-                    }
-                  >
-                    {btn === "login" ? "ثبت نام کنید" : "وارد شوید"}
-                  </span>
-
-                  <span>
-                    {btn === "login"
-                      ? "حساب کاربری ندارید؟"
-                      : "قبلا ثبت نام کرده اید؟"}
-                  </span>
-                </div>
-              </div>
-
-              {btn === "login" ? (
-                <LoginForm
-                  email={email}
-                  password={password}
-                  onEmailChange={(e) => setEmail(e.target.value)}
-                  onPasswordChange={(e) => setPassword(e.target.value)}
-                />
-              ) : (
-                <RegisterForm
-                  firstName={firstName}
-                  lastName={lastName}
-                  email={email}
-                  password={password}
-                  phoneNumber={phoneNumber}
-                  onFirstNameChange={(e) => setFirstName(e.target.value)}
-                  onLastNameChange={(e) => setLastName(e.target.value)}
-                  onEmailChange={(e) => setEmail(e.target.value)}
-                  onPasswordChange={(e) => setPassword(e.target.value)}
-                  onPhoneNumberChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              )}
+            <div role="tablist" className="mt-6 flex gap-1 rounded-xl bg-cream-200/70 p-1">
+              {tab("login", "ورود")}
+              {tab("register", "ثبت‌نام")}
             </div>
 
-            <button
-              type="submit"
-              className="mt-12 w-full bg-[#9a5322] text-white py-3 cursor-pointer px-4 rounded-md hover:bg-[#7c421f] focus:outline-none focus:ring-2 focus:ring-[#9a5322]"
-            >
-              {btn === "login" ? "ورود به حساب کاربری" : "ثبت نام"}
-            </button>
-          </form>
-        </div>
+            <div className="mt-6">
+              {mode === "login" ? (
+                <LoginForm key={registeredEmail} defaultEmail={registeredEmail} onSubmit={handleLogin} />
+              ) : (
+                <RegisterForm onSubmit={handleRegister} />
+              )}
+            </div>
+          </div>
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 

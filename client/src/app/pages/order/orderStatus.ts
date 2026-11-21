@@ -1,37 +1,43 @@
-export const orderStatusMap: Record<
-  string,
-  { label: string; className: string }
-> = {
+export const orderSteps = ["Pending", "Paid", "Preparing", "Shipped", "Delivered"] as const;
+
+export const orderStatusMap: Record<string, { label: string; className: string; dot: string }> = {
   Pending: {
     label: "در انتظار پرداخت",
-    className: "bg-yellow-100 text-yellow-700",
+    className: "bg-amber-50 text-amber-800 ring-amber-200",
+    dot: "bg-amber-500",
   },
   Paid: {
     label: "پرداخت‌شده",
-    className: "bg-blue-100 text-blue-700",
+    className: "bg-sky-50 text-sky-800 ring-sky-200",
+    dot: "bg-sky-500",
   },
   Preparing: {
     label: "در حال آماده‌سازی",
-    className: "bg-purple-100 text-purple-700",
+    className: "bg-copper-50 text-copper-800 ring-copper-200",
+    dot: "bg-copper-500",
   },
   Shipped: {
     label: "ارسال‌شده",
-    className: "bg-indigo-100 text-indigo-700",
+    className: "bg-indigo-50 text-indigo-800 ring-indigo-200",
+    dot: "bg-indigo-500",
   },
   Delivered: {
     label: "تحویل داده‌شده",
-    className: "bg-green-100 text-green-700",
+    className: "bg-patina-50 text-patina-700 ring-patina-100",
+    dot: "bg-patina-500",
   },
   Cancelled: {
     label: "لغو شده",
-    className: "bg-red-100 text-red-700",
+    className: "bg-red-50 text-red-700 ring-red-200",
+    dot: "bg-red-500",
   },
 };
 
 export const getOrderStatus = (status: string) =>
   orderStatusMap[status] ?? {
     label: status,
-    className: "bg-gray-100 text-gray-700",
+    className: "bg-cream-100 text-ink-700 ring-line",
+    dot: "bg-stone-400",
   };
 
 export const cancellableStatuses = ["Pending", "Paid"];

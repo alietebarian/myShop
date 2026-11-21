@@ -1,67 +1,62 @@
-import { useState } from "react";
-import { IoIosClose } from "react-icons/io";
+import { useForm } from "react-hook-form";
+import Modal from "../../components/ui/Modal";
+import Spinner from "../../components/ui/Spinner";
 
 interface CategoryModalProps {
-  title: string;
+  open: boolean;
+  mode: "create" | "edit";
   initialName: string;
+  saving?: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
 }
 
-function CategoryModal({ title, initialName, onClose, onSave }: CategoryModalProps) {
-  const [name, setName] = useState(initialName);
+function CategoryModal({ open, mode, initialName, saving, onClose, onSave }: CategoryModalProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ name: string }>({ mode: "onTouched", values: { name: initialName } });
 
   return (
-    <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-copper-100 bg-white shadow-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-copper-100 px-6 py-4">
-        <h3 className="text-xl font-bold text-ink">{`${title} دسته بندی`}</h3>
-        <button
-          onClick={onClose}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition hover:bg-cream-100 hover:text-red-500"
-        >
-          <IoIosClose className="text-3xl" />
-        </button>
-      </div>
-
-      {/* Body */}
-      <div className="space-y-5 p-6">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-ink">
-            نام دسته‌بندی
-          </label>
-
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="مثلاً ظروف مسی"
-            className="w-full rounded-xl border border-copper-100 px-4 py-3 text-ink outline-none transition-all duration-200 placeholder:text-stone-400 focus:border-copper-400 focus:ring-4 focus:ring-copper-100"
-          />
-
-          <span className="text-xs text-stone-400">
-            نامی وارد کنید که برای کاربران نمایش داده می‌شود.
-          </span>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex justify-end gap-3 border-t border-copper-100 px-6 py-4">
-        <button
-          onClick={onClose}
-          className="rounded-xl border border-copper-100 px-6 py-2.5 font-medium text-stone-600 transition hover:bg-cream-100"
-        >
-          انصراف
-        </button>
-
-        <button
-          onClick={() => onSave(name)}
-          className="rounded-xl bg-copper-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all duration-200 hover:bg-copper-700 active:scale-[0.98]"
-        >
-          ذخیره
-        </button>
-      </div>
-    </div>
+    <Modal
+      open={open}
+      onClose={onClose}
+      size="sm"
+      title={mode === "create" ? "افزودن دسته‌بندی" : "ویرایش دسته‌بندی"}
+      footer={
+        <>
+          <button type="button" className="btn btn-secondary" onClick={onClose} disabled={saving}>
+            انصراف
+          </button>
+          <button type="submit" form="category-form" className="btn btn-primary" disabled={saving}>
+            {saving && <Spinner className="h-4 w-4" />}
+            {mode === "create" ? "افزودن دسته‌بندی" : "ذخیره تغییرات"}
+          </button>
+        </>
+      }
+    >
+      <form id="category-form" noValidate onSubmit={handleSubmit(({ name }) => onSave(name.trim()))}>
+        <label htmlFor="cat-name" className="field-label">
+          نام دسته‌بندی
+        </label>
+        <input
+          id="cat-name"
+          className={`input ${errors.name ? "border-red-300 focus:border-red-400 focus:ring-red-100" : ""}`}
+          placeholder="مثلاً ظروف پذیرایی"
+          aria-invalid={!!errors.name}
+          {...register("name", {
+            validate: (v) => v.trim().length > 0 || "نام دسته‌بندی را وارد کنید",
+            maxLength: { value: 100, message: "حداکثر ۱۰۰ کاراکتر" },
+          })}
+        />
+        {errors.name ? (
+          <p className="mt-1.5 text-xs font-medium text-red-600">{errors.name.message}</p>
+        ) : (
+          <p className="field-hint">این نام در منوی فروشگاه به مشتریان نمایش داده می‌شود.</p>
+        )}
+      </form>
+    </Modal>
   );
 }
 

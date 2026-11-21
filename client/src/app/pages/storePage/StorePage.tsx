@@ -1,148 +1,142 @@
 import { useSearchParams } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
+import { PiPackage } from "react-icons/pi";
 import { useProducts } from "../../../lib/hooks/useProducts";
-import StoreHeader from "../../layout/component/StoreHeader";
+import { useCategories } from "../../../lib/hooks/useCategories";
+import { useAddToCartAction } from "../../../lib/hooks/useAddToCartAction";
+import { formatNumber } from "../../../lib/utils/format";
 import FilteredStore from "./FilteredStore";
-import StoreCard from "./StoreCard";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useAddItemToCart } from "../../../lib/hooks/useCart";
-import { getImageUrl } from "../../../lib/hooks/getImageUrl";
+import ProductCard, { ProductCardSkeleton, ProductGrid } from "../../components/product/ProductCard";
+import Pagination from "../../components/ui/Pagination";
+import EmptyState from "../../components/ui/EmptyState";
+import Breadcrumb from "../../components/ui/Breadcrumb";
+
+const PAGE_SIZE = 9;
 
 function StorePage() {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") ?? "";
+  const selectedCategory = params.get("category") ?? "";
+  const pageNumber = Math.max(1, Number(params.get("page")) || 1);
 
-  const [pageNumber, setPageNumber] = useState(1)
-  const pageSize = 9
-  const [searchParams] = useSearchParams();
-  const search = searchParams.get("search") ?? "";
-  const { data: products, isLoading } = useProducts(pageNumber, pageSize, search);
-  const totalPages = products?.totalPages ?? 1
+  const { data: products, isLoading, isFetching } = useProducts(pageNumber, PAGE_SIZE, search);
+  const { data: categories } = useCategories(1, 10, "");
+  const { addToCart, addingId } = useAddToCartAction();
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const { mutate: addItemToCart } = useAddItemToCart()
-  const [addingId, setAddingId] = useState<string | null>(null)
+  const categoryName = categories?.items.find((c) => c.id === selectedCategory)?.name;
 
-  const filteredProducts =
-    products?.items.filter((product) => {
-      if (!selectedCategory) return true;
+  const visibleProducts =
+    products?.items.filter(
+      (p) => p.status && (!selectedCategory || p.categoryId.toLowerCase() === selectedCategory.toLowerCase()),
+    ) ?? [];
 
-      return product.categoryId === selectedCategory;
-    }) ?? [];
-
-  const handleAddToCart = (productId: string) => {
-    setAddingId(productId);
-
-    addItemToCart(
-      { productId, quantity: 1 },
-      {
-        onSuccess: () => {
-          toast.success("به سبد اضافه شد");
-        },
-        onError: () => {
-          toast.error("خطا در افزودن به سبد");
-        },
-        onSettled: () => {
-          setAddingId(null);
-        },
-      }
-    );
+  const updateParams = (changes: Record<string, string | number | null>) => {
+    const next = new URLSearchParams(params);
+    Object.entries(changes).forEach(([key, value]) => {
+      if (value === null || value === "" || (key === "page" && value === 1)) next.delete(key);
+      else next.set(key, String(value));
+    });
+    setParams(next);
   };
 
+  const title = search ? `نتایج جستجو برای «${search}»` : (categoryName ?? "همه محصولات");
+
   return (
-    <div className="min-h-screen bg-cream">
-      <StoreHeader />
+    <div className="container-page py-6 md:py-8">
+      <Breadcrumb
+        items={[
+          { label: "خانه", to: "/" },
+          { label: "محصولات", to: categoryName || search ? "/products" : undefined },
+          ...(categoryName ? [{ label: categoryName }] : []),
+          ...(search ? [{ label: `جستجو: ${search}` }] : []),
+        ]}
+      />
 
-      {/* <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"> */}
-      <main className="w-full px-8 py-6">
-        <div className="mb-6">
-          <h1 className="font-display text-3xl text-ink">محصولات</h1>
+      <div className="mb-6 flex flex-col gap-1">
+        <h1 className="font-display text-3xl text-ink">{title}</h1>
+        {!isLoading && products && (
+          <p className="text-sm text-stone-500">
+            {formatNumber(products.totalCount)} محصول
+            {search && (
+              <button
+                type="button"
+                onClick={() => updateParams({ search: null, page: null })}
+                className="mr-3 font-semibold text-copper-700 hover:underline"
+              >
+                پاک کردن جستجو
+              </button>
+            )}
+          </p>
+        )}
+      </div>
 
-          <p className="mt-1 text-sm text-stone-600">همه محصولات مس‌کده</p>
-        </div>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <aside className="lg:w-64 lg:shrink-0">
+          <FilteredStore
+            selectedCategory={selectedCategory}
+            onSelectCategory={(id) => updateParams({ category: id, page: null })}
+          />
+        </aside>
 
-        {/* Main Layout */}
-        <div className="flex flex-col-reverse gap-6 lg:flex-row">
-          {/* Filter Section (1/4) */}
-          <aside className="w-full lg:w-1/4">
-            <div className="sticky top-6 rounded-2xl border border-copper-100 bg-white p-5 shadow-sm">
-              <FilteredStore
-                selectedCategory={selectedCategory}
-                onSelectCategory={setSelectedCategory}
+        <section className={`min-w-0 flex-1 transition-opacity ${isFetching && !isLoading ? "opacity-60" : ""}`}>
+          {isLoading ? (
+            <ProductGrid cols={3}>
+              {Array.from({ length: PAGE_SIZE }, (_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </ProductGrid>
+          ) : visibleProducts.length === 0 ? (
+            search ? (
+              <EmptyState
+                icon={<FiSearch />}
+                title={`نتیجه‌ای برای «${search}» پیدا نشد`}
+                description="املای عبارت را بررسی کنید یا با کلمه‌ای کلی‌تر دوباره جستجو کنید."
+                action={
+                  <button type="button" className="btn btn-primary" onClick={() => setParams({})}>
+                    مشاهده همه محصولات
+                  </button>
+                }
+              />
+            ) : (
+              <EmptyState
+                icon={<PiPackage />}
+                title={selectedCategory ? "محصولی از این دسته در این صفحه نیست" : "هنوز محصولی ثبت نشده است"}
+                description={
+                  selectedCategory ? "دسته دیگری را انتخاب کنید یا صفحات دیگر را ببینید." : "به‌زودی محصولات جدید اضافه می‌شوند."
+                }
+                action={
+                  selectedCategory ? (
+                    <button type="button" className="btn btn-secondary" onClick={() => updateParams({ category: null })}>
+                      نمایش همه دسته‌ها
+                    </button>
+                  ) : undefined
+                }
+              />
+            )
+          ) : (
+            <ProductGrid cols={3}>
+              {visibleProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={addToCart}
+                  isAdding={addingId === product.id}
+                />
+              ))}
+            </ProductGrid>
+          )}
+
+          {!isLoading && products && (
+            <div className="mt-10">
+              <Pagination
+                page={pageNumber}
+                totalPages={products.totalPages}
+                onChange={(p) => updateParams({ page: p })}
               />
             </div>
-          </aside>
-
-          {/* Products Section (3/4) */}
-          <section className="w-full lg:w-3/4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredProducts?.map((product) =>
-                product.status ? (
-                  <StoreCard
-                    id={product.id}
-                    key={product.id}
-                    img={getImageUrl(product.image)}
-                    categoryName={product.categoryName}
-                    name={product.name}
-                    price={product.price}
-                    onAddToCart={() => handleAddToCart(product.id)}
-                    isAddingToCart={addingId === product.id}
-                  />
-                ) : null,
-              )}
-            </div>
-          </section>
-        </div>
-      </main>
-      {/* PAGINATION INFO */}
-      {!isLoading && products?.items.length ? (
-        <div className="text-center text-sm text-stone-600">
-          نمایش{" "}
-          <span className="font-bold text-copper-600">
-            {products?.items.length}
-          </span>{" "}
-          از{" "}
-          <span className="font-bold text-copper-600">
-            {products?.totalCount}
-          </span>{" "}
-          محصول
-        </div>
-      ) : null}
-
-      {/* PAGINATION */}
-      {!isLoading && totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2 pb-10">
-          {/* Prev */}
-          <button
-            disabled={pageNumber === 1}
-            onClick={() => setPageNumber((p) => p - 1)}
-            className="rounded-xl border border-copper-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm transition-all hover:border-copper-400 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            ← قبلی
-          </button>
-
-          {/* Pages */}
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPageNumber(i + 1)}
-              className={`h-10 w-10 rounded-xl font-semibold transition-all ${pageNumber === i + 1
-                ? "bg-copper-600 text-cream shadow-lg"
-                : "border border-copper-200 bg-white text-ink-700 hover:border-copper-400 hover:text-copper-600"
-                }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          {/* Next */}
-          <button
-            disabled={pageNumber === totalPages}
-            onClick={() => setPageNumber((p) => p + 1)}
-            className="rounded-xl border border-copper-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm transition-all hover:border-copper-400 hover:text-copper-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            بعدی →
-          </button>
-        </div>
-      )}
+          )}
+        </section>
+      </div>
     </div>
   );
 }
